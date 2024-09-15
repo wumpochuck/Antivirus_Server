@@ -14,8 +14,8 @@
 <p>Для запуска проекта в Visual Studio Code с использованием Java Extension Pack, выполните следующие шаги:</p>
 <ol>
     <li>Установите <a href="https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-pack">Java Extension Pack</a> для Visual Studio Code.</li>
-    <li>Клонируйте репозиторий проекта:</li>
-    <pre><code>git clone https://github.com/yourusername/Java_Antivirus.git</code></pre>
+    <li>Скачайте репозиторий проекта:</li>
+    <li>Скачайте <a href="https://github.com/wumpochuck/Java_Antivirus/archive/refs/heads/main.zip">репозиторий проекта</a></li>
     <li>Откройте проект в Visual Studio Code:</li>
     <pre><code>code /Users/wumpochuck/Github/Java_Antivirus</code></pre>
     <li>Запустите проект с помощью встроенного терминала или конфигурации запуска.</li>

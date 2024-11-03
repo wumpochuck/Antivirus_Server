@@ -2,8 +2,7 @@ package ru.mtuci.antivirus.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import ru.mtuci.antivirus.entities.ENUMS.ROLE;
 
 import java.util.List;
@@ -17,13 +16,11 @@ public class User {
     @Column(name = "id")
     private int id;
 
-    @NotNull
-    @NotEmpty
+    @NotBlank(message = "Логин не может быть пустым")
     @Column(name = "login")
     private String login;
 
-    @NotNull
-    @NotEmpty
+    @NotBlank(message = "Пароль не может быть пустым")
     @Column(name = "password")
     private String password;
 
@@ -57,11 +54,11 @@ public class User {
         return id;
     }
 
-    public @NotNull @NotEmpty String getLogin() {
+    public String getLogin() {
         return login;
     }
 
-    public @NotNull @NotEmpty String getPassword() {
+    public String getPassword() {
         return password;
     }
 
@@ -77,11 +74,11 @@ public class User {
         this.id = id;
     }
 
-    public void setLogin(@NotNull @NotEmpty String login) {
+    public void setLogin(String login) {
         this.login = login;
     }
 
-    public void setPassword(@NotNull @NotEmpty String password) {
+    public void setPassword(String password) {
         this.password = password;
     }
 

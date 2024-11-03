@@ -37,6 +37,10 @@ public class License {
     @JoinColumn(name = "product_id", referencedColumnName = "id")
     private Product product;
 
+    @OneToOne
+    @JoinColumn(name = "type_id", referencedColumnName = "id")
+    private LicenseType licenseType;
+
     public License(Product product, User user, String identifier, boolean isBlocked, Date expirationDate, Date activationDate, String code) {
         this.product = product;
         this.user = user;

@@ -16,7 +16,6 @@ import java.util.function.Function;
 public class JwtUtil {
 
     @Value("${jwt.secret}")
-
     private String secretKey;
 
     // Token consist of 3 parts

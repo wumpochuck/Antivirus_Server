@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.mtuci.antivirus.entities.DTO.UserDTO;
+import ru.mtuci.antivirus.entities.DTO.UserLoginDTO;
+import ru.mtuci.antivirus.entities.DTO.UserRegisterDTO;
 import ru.mtuci.antivirus.entities.ENUMS.ROLE;
 import ru.mtuci.antivirus.entities.User;
 import ru.mtuci.antivirus.services.UserService;
@@ -32,13 +33,12 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> userRegistration(@Valid @RequestBody UserDTO userDTO, BindingResult bindingResult) {
+    public ResponseEntity<?> userRegistration(@Valid @RequestBody UserRegisterDTO userDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body("Ошибка валидации: " + bindingResult.getAllErrors());
         }
 
-        User user = new User(userDTO.getLogin(), passwordEncoder.encode(userDTO.getPassword()), ROLE.USER, null);
-
+        User user = new User(userDTO.getLogin(), passwordEncoder.encode(userDTO.getPassword()), userDTO.getEmail(), ROLE.USER, null);
         userService.saveUser(user);
 
         UserDetails userDetails = userService.loadUserByUsername(user.getUsername());
@@ -49,7 +49,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> userLogin(@Valid @RequestBody UserDTO userDTO, BindingResult bindingResult) {
+    public ResponseEntity<?> userLogin(@Valid @RequestBody UserLoginDTO userDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body("Ошибка валидации: " + bindingResult.getAllErrors());
         }

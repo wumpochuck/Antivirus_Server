@@ -1,8 +1,14 @@
 package ru.mtuci.antivirus.entities;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.List;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "license_types")
 public class LicenseType {
 
@@ -20,57 +26,18 @@ public class LicenseType {
     @Column(name = "description")
     private String description;
 
-    @OneToOne(mappedBy = "license_type")
-    private License license;
+    @OneToMany(mappedBy = "type", cascade = CascadeType.ALL)
+    private List<License> licenses;
 
-    public LicenseType(String name, int defaultDuration, String description, License license) {
+    public LicenseType(String name, int defaultDuration, String description, List<License> licenses) {
         this.name = name;
         this.defaultDuration = defaultDuration;
         this.description = description;
-        this.license = license;
+        this.licenses = licenses;
     }
 
     public LicenseType() {
 
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getDefaultDuration() {
-        return defaultDuration;
-    }
-
-    public void setDefaultDuration(int defaultDuration) {
-        this.defaultDuration = defaultDuration;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public License getLicense() {
-        return license;
-    }
-
-    public void setLicense(License license) {
-        this.license = license;
-    }
 }

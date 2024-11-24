@@ -2,9 +2,9 @@ package ru.mtuci.antivirus.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import ru.mtuci.antivirus.entities.User;
+import ru.mtuci.antivirus.entities.*;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
-    User findByLogin(String login);
+public interface LicenseRepository extends JpaRepository<License, Long> {
+
 }

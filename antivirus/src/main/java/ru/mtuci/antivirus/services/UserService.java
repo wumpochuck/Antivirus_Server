@@ -28,4 +28,8 @@ public class UserService implements UserDetailsService {
     public User findUserByLogin(String login){
         return userRepository.findByLogin(login);
     }
+
+    public User findUserById(Long id){
+        return userRepository.findById(id).orElse(null);
+    }
 }

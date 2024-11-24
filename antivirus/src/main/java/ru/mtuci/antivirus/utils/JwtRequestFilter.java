@@ -4,10 +4,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import ru.mtuci.antivirus.services.UserService;
@@ -25,29 +23,34 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         this.userService = userService;
     }
 
-    // Security Context
-
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        final String authorizationHeader = request.getHeader("Authorization");
-        String jwtToken = null, login = null;
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
+        try{
+            String token = resolveToken(request);
 
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            jwtToken = authorizationHeader.substring(7);
-            login = jwtUtil.extractLogin(jwtToken);
-        }
+            if(token != null && jwtUtil.validateToken(token)){ /// If token is valid
+                String username = jwtUtil.extractLogin(token);
 
-        if(login != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userService.loadUserByUsername(login);
-
-            if(jwtUtil.validateToken(jwtToken, userDetails)) {
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                        new UsernamePasswordAuthenticationToken(login, null, userDetails.getAuthorities());
-
-                usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                if(username != null && SecurityContextHolder.getContext().getAuthentication() == null){
+                    UserDetails userDetails = userService.loadUserByUsername(username);
+                    SecurityContextHolder.getContext().setAuthentication(jwtUtil.getAuthentication(token, userDetails));
+                }
             }
+        } catch (Exception e){
+            System.err.println("JWT Filter error: " + e.getMessage());
         }
+
         filterChain.doFilter(request, response);
+    }
+
+    // Resolve token used in the request to cut off the "Bearer " part
+    private String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
     }
 }

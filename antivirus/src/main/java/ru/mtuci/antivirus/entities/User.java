@@ -3,6 +3,8 @@ package ru.mtuci.antivirus.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,86 +15,55 @@ import java.util.Collections;
 import java.util.List;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "users")
 public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private Long id;
 
     @NotBlank(message = "Логин не может быть пустым")
     @Column(name = "login")
     private String login;
 
     @NotBlank(message = "Пароль не может быть пустым")
-    @Column(name = "password")
-    private String password;
+    @Column(name = "password_hash")
+    private String passwordHash;
+
+    @Column(name = "email")
+    private String email;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private ROLE role;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<License> licenses;
 
-    public User(int id, String login, String password, ROLE role, List<License> licenses) {
+    public User(Long id, String login, String passwordHash, String email, ROLE role, List<License> licenses) {
         this.id = id;
         this.login = login;
-        this.password = password;
+        this.passwordHash = passwordHash;
+        this.email = email;
         this.role = role;
         this.licenses = licenses;
     }
 
-    public User(String login, String password, ROLE role, List<License> licenses) {
+    public User(String login, String passwordHash, String email, ROLE role, List<License> licenses) {
         this.login = login;
-        this.password = password;
+        this.passwordHash = passwordHash;
+        this.email = email;
         this.role = role;
         this.licenses = licenses;
     }
+
+
 
     public User() {
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public ROLE getRole() {
-        return role;
-    }
-
-    public List<License> getLicenses() {
-        return licenses;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setRole(ROLE role) {
-        this.role = role;
-    }
-
-    public void setLicenses(List<License> licenses) {
-        this.licenses = licenses;
     }
 
     @Override
@@ -118,6 +89,11 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority(role.toString()));
+    }
+
+    @Override
+    public String getPassword() {
+        return passwordHash;
     }
 
     @Override

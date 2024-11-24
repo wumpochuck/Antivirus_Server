@@ -1,7 +1,7 @@
 ### MACOS ###
 .DS_Store
 
-
+./antivirus/src/main/resources/application.properties
 
 HELP.md
 target/

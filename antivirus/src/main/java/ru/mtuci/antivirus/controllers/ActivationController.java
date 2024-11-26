@@ -35,6 +35,7 @@ public class ActivationController {
 
     @PostMapping("/activate")
     public ResponseEntity<?> activateLicense(@Valid @RequestBody ActivationRequest request, BindingResult bindingResult) {
+        System.out.println("ActivationController: activateLicense: Started activating license, data: " + request.getActivationCode() + ", " + request.getDeviceName() + ", " + request.getMacAddress());
         if (bindingResult.hasErrors()) {
             StringBuilder errorMessage = new StringBuilder();
             bindingResult.getFieldErrors().forEach(error ->
@@ -48,20 +49,20 @@ public class ActivationController {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication == null || !authentication.isAuthenticated()) {
-                return ResponseEntity.status(403).body("Пользователь не аутентифицирован");
+                return ResponseEntity.status(403).body("User is not authenticated");
             }
 
             String username = authentication.getName();
-            System.out.println("Запрос на активацию от " + username);
+            System.out.println("ActivationController: activateLicense: Request from user: " + username);
 
-            String activationCode = request.getActivationCode();
+            String activationCode = request.getActivationCode(); // TODO rewrite logic here
 
             User deviceOwner = userService.getUserByLogin(username);
 
-            // Регистрируем или обновляем устройство
+            // Register or update device
             Device device = deviceService.registerOrUpdateDevice(request, deviceOwner);
 
-            // Активируем лицензию
+            // Activate license
             Ticket ticket = licenseService.activateLicense(activationCode, device, username);
 
             return ResponseEntity.ok(ticket);
@@ -69,8 +70,8 @@ public class ActivationController {
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());
         } catch (Exception ex) {
-            // Общая ошибка
-            return ResponseEntity.status(500).body("Внутренняя ошибка сервера: " + ex.getMessage());
+            // global exception handler
+            return ResponseEntity.status(500).body("Internal server error: " + ex.getMessage());
         }
     }
 }

@@ -10,7 +10,7 @@ import java.util.Date;
 public class Ticket {
 
     private Date currentDate;
-    private Date lifetime;
+    private int lifetime;
     private Date activationDate;
     private Date expirationDate;
     private Long userId;
@@ -18,7 +18,7 @@ public class Ticket {
     private Boolean isBlocked;
     private String signature;
 
-    public Ticket(Date currentDate, Date lifetime, Date activationDate, Date expirationDate, Long userId, Long deviceId, Boolean isBlocked, String signature) {
+    public Ticket(Date currentDate, int lifetime, Date activationDate, Date expirationDate, Long userId, Long deviceId, Boolean isBlocked, String signature) {
         this.currentDate = currentDate;
         this.lifetime = lifetime;
         this.activationDate = activationDate;

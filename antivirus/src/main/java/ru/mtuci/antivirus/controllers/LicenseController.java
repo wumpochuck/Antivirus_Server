@@ -21,15 +21,10 @@ public class LicenseController {
         this.licenseService = licenseService;
     }
 
-    @GetMapping("/test")
-    public String test(){
-        return "Tested successfully";
-    }
-
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/create")
     public ResponseEntity<?> createLicense(@Valid @RequestBody LicenseRequest licenseRequest) {
-        System.out.println("createLicense: Started creating license, data: " + licenseRequest);
+        System.out.println("LicenseController: createLicense: Started creating license, data: " + licenseRequest.getDescription());
 
         try{
             License license = licenseService.createLicense(licenseRequest);
@@ -37,7 +32,7 @@ public class LicenseController {
             if (license == null) {
                 return ResponseEntity.badRequest().body("Failed to create license");
             }
-            return ResponseEntity.ok("License created successfully, license: " + license);
+            return ResponseEntity.ok("License created successfully, license code: " + license.getCode());
 
         } catch (IllegalArgumentException e){
             return ResponseEntity.badRequest().body(e.getMessage());

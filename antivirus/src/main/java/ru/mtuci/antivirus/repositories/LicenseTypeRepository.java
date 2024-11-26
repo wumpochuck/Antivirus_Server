@@ -6,4 +6,5 @@ import ru.mtuci.antivirus.entities.LicenseType;
 
 @Repository
 public interface LicenseTypeRepository extends JpaRepository<LicenseType, Long> {
+    public LicenseType getLicenseTypeById(Long licenseTypeId);
 }

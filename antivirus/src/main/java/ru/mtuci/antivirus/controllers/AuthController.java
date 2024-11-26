@@ -1,5 +1,6 @@
 package ru.mtuci.antivirus.controllers;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -32,13 +33,18 @@ public class AuthController {
         this.jwtUtil = jwtUtil;
     }
 
+    @PostMapping("/test")
+    public String test() {
+        return "Tested successfully";
+    }
+
     @PostMapping("/register")
     public ResponseEntity<?> userRegistration(@Valid @RequestBody UserRegisterDTO userDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body("Ошибка валидации: " + bindingResult.getAllErrors());
         }
 
-        User user = new User(userDTO.getLogin(), passwordEncoder.encode(userDTO.getPassword()), userDTO.getEmail(), ROLE.USER, null);
+        User user = new User(userDTO.getLogin(), passwordEncoder.encode(userDTO.getPassword()), userDTO.getEmail(), ROLE.ROLE_USER, null);
         userService.saveUser(user);
 
         UserDetails userDetails = userService.loadUserByUsername(user.getUsername());
@@ -54,7 +60,7 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Ошибка валидации: " + bindingResult.getAllErrors());
         }
 
-        User user = userService.findUserByLogin(userDTO.getLogin());
+        User user = userService.getUserByLogin(userDTO.getLogin());
 
         // If login not exist
         if(user == null){
@@ -69,6 +75,7 @@ public class AuthController {
         String token = jwtUtil.generateToken(userService.loadUserByUsername(user.getUsername()));
         return ResponseEntity.ok("Аутентификация завершена, JWT: " + token);
 
-
     }
+
+
 }

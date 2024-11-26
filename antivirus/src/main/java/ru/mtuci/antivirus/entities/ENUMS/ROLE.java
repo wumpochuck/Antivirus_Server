@@ -1,5 +1,5 @@
 package ru.mtuci.antivirus.entities.ENUMS;
 
 public enum ROLE {
-    USER, ADMIN
+    ROLE_USER, ROLE_ADMIN
 }

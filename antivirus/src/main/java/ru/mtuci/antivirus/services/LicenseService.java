@@ -6,6 +6,9 @@ import ru.mtuci.antivirus.entities.*;
 import ru.mtuci.antivirus.entities.DTO.LicenseRequest;
 import ru.mtuci.antivirus.repositories.LicenseRepository;
 
+import java.time.LocalDateTime;
+import java.util.Date;
+
 @Service
 public class LicenseService{
 
@@ -24,23 +27,20 @@ public class LicenseService{
         this.licenseHistoryService = licenseHistoryService;
     }
 
-    public License createLicense(LicenseRequest licenseRequest){
+    public License createLicense(LicenseRequest licenseRequest) {
         Product product = productService.getProductById(licenseRequest.getProductId());
         if(product == null){
-            System.err.println("LicenseService: createLicense: product not found");
-            return null;
+            throw new IllegalArgumentException("Продукт не найден");
         }
 
-        User user = userService.findUserById(licenseRequest.getOwnerId());
+        User user = userService.getUserById(licenseRequest.getOwnerId());
         if(user == null){
-            System.err.println("LicenseService: createLicense: user not found");
-            return null;
+            throw new IllegalArgumentException("Пользователь не найден");
         }
 
         LicenseType licenseType = licenseTypeService.getLicenseTypeById(licenseRequest.getLicenseTypeId());
         if(licenseType == null){
-            System.err.println("LicenseService: createLicense: license type not found");
-            return null;
+            throw new IllegalArgumentException("Тип лицензии не найден");
         }
 
         String code = generateLicenseCode();
@@ -67,10 +67,14 @@ public class LicenseService{
         return license;
     }
 
+
+
     // Other methods
+
+
 
     private String generateLicenseCode(){
         return "1234567890";
-        /// TODO: implement license code generation
+        /// TODO: implement license code generation...
     }
 }

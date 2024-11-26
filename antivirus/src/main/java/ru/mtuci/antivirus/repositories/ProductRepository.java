@@ -6,5 +6,5 @@ import ru.mtuci.antivirus.entities.Product;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
-
+    Product getProductsById(Long id);
 }

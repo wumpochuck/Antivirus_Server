@@ -16,6 +16,6 @@ public class LicenseTypeService {
     }
 
     public LicenseType getLicenseTypeById(Long licenseTypeId) {
-        return licenseTypeRepository.findById(licenseTypeId).orElse(null);
+        return licenseTypeRepository.getLicenseTypeById(licenseTypeId);
     }
 }

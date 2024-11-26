@@ -41,7 +41,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> userRegistration(@Valid @RequestBody UserRegisterDTO userDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body("Ошибка валидации: " + bindingResult.getAllErrors());
+            return ResponseEntity.badRequest().body("Validation error: " + bindingResult.getAllErrors());
         }
 
         User user = new User(userDTO.getLogin(), passwordEncoder.encode(userDTO.getPassword()), userDTO.getEmail(), ROLE.ROLE_USER, null);
@@ -51,13 +51,13 @@ public class AuthController {
         String token = jwtUtil.generateToken(userDetails);
 
 
-        return ResponseEntity.ok("Регистрация завершена, JWT: " + token);
+        return ResponseEntity.ok("Registration competed, JWT: " + token);
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> userLogin(@Valid @RequestBody UserLoginDTO userDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body("Ошибка валидации: " + bindingResult.getAllErrors());
+            return ResponseEntity.badRequest().body("Validation error: " + bindingResult.getAllErrors());
         }
 
         User user = userService.getUserByLogin(userDTO.getLogin());
@@ -73,7 +73,7 @@ public class AuthController {
         }
 
         String token = jwtUtil.generateToken(userService.loadUserByUsername(user.getUsername()));
-        return ResponseEntity.ok("Аутентификация завершена, JWT: " + token);
+        return ResponseEntity.ok("Login completed, JWT: " + token);
 
     }
 

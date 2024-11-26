@@ -2,7 +2,10 @@ package ru.mtuci.antivirus.services;
 
 import org.springframework.stereotype.Service;
 import ru.mtuci.antivirus.entities.DeviceLicense;
+import ru.mtuci.antivirus.entities.License;
 import ru.mtuci.antivirus.repositories.DeviceLicenseRepository;
+
+import java.util.List;
 
 @Service
 public class DeviceLicenseService {
@@ -11,6 +14,10 @@ public class DeviceLicenseService {
 
     public DeviceLicenseService(DeviceLicenseRepository deviceLicenseRepository) {
         this.deviceLicenseRepository = deviceLicenseRepository;
+    }
+
+    public List<DeviceLicense> getDeviceLicensesByLicense(License license) {
+        return deviceLicenseRepository.getDeviceLicenseByLicense(license);
     }
 
     public void save(DeviceLicense deviceLicense) {

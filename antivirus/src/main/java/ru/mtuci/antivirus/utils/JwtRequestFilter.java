@@ -44,6 +44,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+        System.out.println("JwtRequestFilter: doFilterInternal: Someone passed filter");
     }
 
     // Resolve token used in the request to cut off the "Bearer " part

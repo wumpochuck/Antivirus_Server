@@ -36,6 +36,8 @@ public class LicenseService{
 
     /// License creation
     public License createLicense(LicenseRequest licenseRequest) {
+
+        // Trying to get product, user and license type by id
         Product product = productService.getProductById(licenseRequest.getProductId());
         if(product == null){
             throw new IllegalArgumentException("Product not found");
@@ -51,8 +53,10 @@ public class LicenseService{
             throw new IllegalArgumentException("License type not found");
         }
 
+        // Generate license code
         String code = generateLicenseCode(licenseRequest);
 
+        // Create license and saving
         License license = new License();
         license.setCode(code);
         license.setUser(user);
@@ -66,9 +70,9 @@ public class LicenseService{
         license.setDuration(licenseRequest.getDuration());
         license.setDescription(licenseRequest.getDescription());
         license.setProduct(product);
-
         licenseRepository.save(license);
 
+        // Save license history
         LicenseHistory licenseHistory = new LicenseHistory(license, user, "CREATED", new Date(), "License created");
         licenseHistoryService.saveLicenseHistory(licenseHistory);
 
@@ -76,43 +80,66 @@ public class LicenseService{
     }
 
     /// License activation
-    public Ticket activateLicense(String activationCode, Device device, String username) {
+    public Ticket activateLicense(String activationCode, Device device, String login) {
+
+        // Trying to get license by activation code
         License license = licenseRepository.getLicensesByCode(activationCode);
-        if (license == null) {
+        if(license == null){
             throw new IllegalArgumentException("License not found");
         }
 
-        // Validation
-        validateActivation(license, device, username);
+        // Validate license
+        validateActivation(license, device, login);
 
-        // Linking
+        // Create device license
         createDeviceLicense(license, device);
 
-        // Updating
-        licenseRepository.save(license);
+        // Update license
+        updateLicense(license);
 
-        User currentUser = userService.getUserByLogin(username);
-
-        // Writing history
-        LicenseHistory licenseHistory = new LicenseHistory(license, currentUser, "ACTIVATED",new Date(), "License activated");
+        // Save license history
+        LicenseHistory licenseHistory = new LicenseHistory(license, license.getOwner(), "ACTIVATED", new Date(), "License activated");
         licenseHistoryService.saveLicenseHistory(licenseHistory);
 
-        // Ticket generation
-        return generateTicket(license, device);
+        // Generate ticket
+        Ticket ticket = new Ticket();
+        ticket.setCurrentDate(new Date());
+        ticket.setLifetime(license.getDuration());
+        ticket.setActivationDate(new Date());
+        ticket.setExpirationDate(license.getEndingDate());
+        ticket.setUserId(license.getOwner().getId());
+        ticket.setDeviceId(device.getId());
+        ticket.setIsBlocked(false);
+        ticket.setSignature(generateSignature(ticket));
+        return ticket;
     }
 
     // Other methods
 
-    private void validateActivation(License license, Device device, String username) {
+    private void validateActivation(License license, Device device, String login) {
+
+        // Is license blocked
         if (license.getIsBlocked()) {
             throw new IllegalArgumentException("Could not activate license: license is blocked");
         }
 
-        if (license.getEndingDate().before(new Date())) {
-            throw new IllegalArgumentException("Could not activate license: license is expired");
+        // Is license expired
+        if(license.getEndingDate() != null) {
+            if (license.getEndingDate().before(new Date())) {
+                throw new IllegalArgumentException("Could not activate license: license is expired");
+            }
+        }
+        // Is license already activated
+        if (license.getFirstActivationDate() != null) {
+            throw new IllegalArgumentException("Could not activate license: license is already activated");
         }
 
-        // TODO Дополнительные проверки
+        // Is device count exceeded
+        if (license.getDevicesCount() <= deviceLicenseService.getDeviceLicensesByLicense(license).size()) {
+            throw new IllegalArgumentException("Could not activate license: device count exceeded");
+        }
+
+        // TODO Add another validation rules...
     }
 
     private void createDeviceLicense(License license, Device device) {
@@ -124,18 +151,10 @@ public class LicenseService{
         deviceLicenseService.save(deviceLicense);
     }
 
-    private Ticket generateTicket(License license, Device device) {
-        Ticket ticket = new Ticket();
-        ticket.setCurrentDate(new Date());
-        ticket.setLifetime(license.getDuration());
-        ticket.setActivationDate(new Date());
-        ticket.setExpirationDate(license.getEndingDate());
-        ticket.setUserId(license.getUser().getId());
-        ticket.setDeviceId(device.getId());
-        ticket.setIsBlocked(false);
-        ticket.setSignature(generateSignature(ticket));
-
-        return ticket;
+    private void updateLicense(License license) {
+        license.setFirstActivationDate(new Date());
+        license.setEndingDate(new Date(System.currentTimeMillis() + license.getDuration()));
+        licenseRepository.save(license);
     }
 
     private String generateSignature(Ticket ticket) {

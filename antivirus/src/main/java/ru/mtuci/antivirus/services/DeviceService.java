@@ -16,7 +16,7 @@ public class DeviceService {
         this.deviceRepository = deviceRepository;
     }
 
-    public Device registerOrUpdateDevice(ActivationRequest activationRequest, User deviceOwner) {
+    public Device registerOrUpdateDevice(ActivationRequest activationRequest, User user) {
 
         // Получение устройства по MAC-адресу
         Device device = deviceRepository.getDeviceByMacAddress(activationRequest.getMacAddress());
@@ -27,8 +27,7 @@ public class DeviceService {
         // Обновление информации об устройстве
         device.setName(activationRequest.getDeviceName());
         device.setMacAddress(activationRequest.getMacAddress());
-
-        device.setUser(deviceOwner);
+        device.setUser(user);
 
         return deviceRepository.save(device);
     }

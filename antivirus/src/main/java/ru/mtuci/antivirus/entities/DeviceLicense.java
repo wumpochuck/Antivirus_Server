@@ -1,5 +1,6 @@
 package ru.mtuci.antivirus.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,11 +18,12 @@ public class DeviceLicense {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "license_id")
+    @JoinColumn(name = "license_id", nullable = false)
     private License license;
 
     @ManyToOne
-    @JoinColumn(name = "device_id")
+    @JoinColumn(name = "device_id", nullable = false)
+    @JsonBackReference
     private Device device;
 
     @Column(name = "activation_date")

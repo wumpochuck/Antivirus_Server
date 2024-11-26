@@ -1,6 +1,8 @@
 package ru.mtuci.antivirus.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -18,6 +20,7 @@ import java.util.List;
 @Getter
 @Setter
 @Table(name = "users")
+@JsonIgnoreProperties({"licenses", "devices"})
 public class User implements UserDetails {
 
     @Id
@@ -42,6 +45,7 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     @JsonIgnore
+    @JsonManagedReference
     private List<License> licenses;
 
     public User(Long id, String login, String passwordHash, String email, ROLE role, List<License> licenses) {

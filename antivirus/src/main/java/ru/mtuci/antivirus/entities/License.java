@@ -1,5 +1,6 @@
 package ru.mtuci.antivirus.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,14 +22,17 @@ public class License {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
+    @JsonBackReference
     private User user;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "product_id")
+    @JsonBackReference
     private Product product;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "type_id")
+    @JsonBackReference
     private LicenseType type;
 
     @Column(name = "first_activation_date")
@@ -45,6 +49,7 @@ public class License {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "owner_id")
+    @JsonBackReference
     private User owner;
 
     @Column(name = "duration")

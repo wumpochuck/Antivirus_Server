@@ -1,5 +1,7 @@
 package ru.mtuci.antivirus.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,10 +25,12 @@ public class Device {
     private String macAddress;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
     private User user;
 
     @OneToMany(mappedBy = "device", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<DeviceLicense> deviceLicenses;
 
     public Device(String name, String macAddress, User user, List<DeviceLicense> deviceLicenses) {

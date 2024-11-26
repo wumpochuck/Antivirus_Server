@@ -6,5 +6,5 @@ import ru.mtuci.antivirus.entities.*;
 
 @Repository
 public interface LicenseRepository extends JpaRepository<License, Long> {
-
+    License getLicensesByCode(String code);
 }

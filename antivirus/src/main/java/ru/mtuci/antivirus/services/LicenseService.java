@@ -67,7 +67,29 @@ public class LicenseService{
         return license;
     }
 
-
+    public Ticket activateLicense(String activationCode, Device device, String username) {
+        License license = licenseRepository.getLicensesByCode(activationCode);
+        if (license == null) {
+            throw new IllegalArgumentException("Лицензия не найдена");
+        }
+//
+//        // Валидация
+//        validateActivation(license, device, username);
+//
+//        // Привязка
+//        createDeviceLicense(license, device);
+//
+//        // Обновление лицензии
+//        updateLicense(license);
+//
+//        User currentUser = userService.findByLogin(username);
+//
+//        // Запись в историю
+//        licenseHistoryService.recordLicenseChange(license, currentUser, "Activated", "Лицензия активирована");
+//
+//        // Генерация тикета
+//        return generateTicket(license, device);
+    }
 
     // Other methods
 

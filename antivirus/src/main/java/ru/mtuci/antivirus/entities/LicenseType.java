@@ -26,7 +26,7 @@ public class LicenseType {
     @Column(name = "description")
     private String description;
 
-    @OneToMany(mappedBy = "type", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "type", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<License> licenses;
 
     public LicenseType(String name, int defaultDuration, String description, List<License> licenses) {

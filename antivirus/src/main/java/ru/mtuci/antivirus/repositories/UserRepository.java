@@ -6,6 +6,6 @@ import ru.mtuci.antivirus.entities.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    User getUserByLogin(String login);
+    User findUserByLogin(String login);
     User getUserById(Long id);
 }

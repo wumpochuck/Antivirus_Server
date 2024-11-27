@@ -29,7 +29,7 @@ public class Device {
     @JsonBackReference
     private User user;
 
-    @OneToMany(mappedBy = "device", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "device", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<DeviceLicense> deviceLicenses;
 

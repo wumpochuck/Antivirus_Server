@@ -1,18 +1,19 @@
 package ru.mtuci.antivirus.services;
 
-import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.mtuci.antivirus.entities.*;
 import ru.mtuci.antivirus.entities.DTO.LicenseRequest;
 import ru.mtuci.antivirus.repositories.LicenseRepository;
+import ru.mtuci.antivirus.utils.SignatureKeys;
 
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.security.*;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class LicenseService{
@@ -102,19 +103,33 @@ public class LicenseService{
         licenseHistoryService.saveLicenseHistory(licenseHistory);
 
         // Generate ticket
+        return generateTicket(license, device);
+    }
+
+    /// License finding for the device
+    public List<License> getActiveLicenseForDevice(Device device, User user) {
+        return device.getDeviceLicenses().stream()
+                .map(DeviceLicense::getLicense)
+                .filter(license -> !license.getIsBlocked())
+                .toList();
+    }
+
+    // Other methods
+
+    public Ticket generateTicket(License license, Device device){
         Ticket ticket = new Ticket();
+
         ticket.setCurrentDate(new Date());
-        ticket.setLifetime(license.getDuration());
+        ticket.setLifetime(license.getDuration()); // Ticket life time, should be decreased to const int
         ticket.setActivationDate(new Date());
         ticket.setExpirationDate(license.getEndingDate());
         ticket.setUserId(license.getOwner().getId());
         ticket.setDeviceId(device.getId());
         ticket.setIsBlocked(false);
         ticket.setSignature(generateSignature(ticket));
+
         return ticket;
     }
-
-    // Other methods
 
     private void validateActivation(License license, Device device, String login) {
 
@@ -157,8 +172,10 @@ public class LicenseService{
         licenseRepository.save(license);
     }
 
-    private String generateSignature(Ticket ticket) {
-        return Keys.hmacShaKeyFor(ticket.toString().getBytes()).toString(); // TODO: implement signature generation...
+    public String generateSignature(Ticket ticket){
+
+        // TODO Implement signature generation
+        return "signature";
     }
 
     private String generateLicenseCode(LicenseRequest licenseRequest){
@@ -170,6 +187,7 @@ public class LicenseService{
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("Error generating license code", e);
         }
-        // TODO: implement license code generation...
+
+        // TODO: implement / refactor license code generation...
     }
 }

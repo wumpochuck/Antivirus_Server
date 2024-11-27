@@ -32,7 +32,7 @@ public class LicenseController {
             if (license == null) {
                 return ResponseEntity.badRequest().body("Failed to create license");
             }
-            return ResponseEntity.ok("License created successfully, license code: " + license.getCode());
+            return ResponseEntity.ok("License created successfully, License:\n" + license.getBody());
 
         } catch (IllegalArgumentException e){
             return ResponseEntity.badRequest().body(e.getMessage());

@@ -1,11 +1,10 @@
 package ru.mtuci.antivirus.controllers;
 
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.mtuci.antivirus.entities.DTO.ActivationRequest;
 import ru.mtuci.antivirus.entities.*;
@@ -19,6 +18,7 @@ public class ActivationController {
     private final DeviceService deviceService;
     private final LicenseService licenseService;
 
+    @Autowired
     public ActivationController(UserService userService, DeviceService deviceService, LicenseService licenseService) {
         this.userService = userService;
         this.deviceService = deviceService;
@@ -35,16 +35,16 @@ public class ActivationController {
     public ResponseEntity<?> activateLicense(@Valid @RequestBody ActivationRequest activationRequest/*, BindingResult bindingResult*/) {
         System.out.println("ActivationController: activateLicense: Started activating license, data: " + activationRequest.getActivationCode() + ", " + activationRequest.getDeviceName() + ", " + activationRequest.getMacAddress());
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication == null || !authentication.isAuthenticated()){
-            return ResponseEntity.status(403).body("User is not authenticated");
-        }
-
         try {
+
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if(authentication == null || !authentication.isAuthenticated()){
+                return ResponseEntity.status(403).body("User is not authenticated");
+            }
 
             // Get authenticated user
             System.out.println("ActivationController: activateLicense: Request from user: " + authentication.getName());
-            User user = userService.getUserByLogin(authentication.getName());
+            User user = userService.findUserByLogin(authentication.getName());
 
             // Register or update device
             Device device = deviceService.registerOrUpdateDevice(activationRequest, user);
@@ -54,7 +54,7 @@ public class ActivationController {
             String login = user.getLogin();
             Ticket ticket = licenseService.activateLicense(activationCode, device, login);
 
-            return ResponseEntity.ok("License activated successfully. Ticket: " + ticket.getBody());
+            return ResponseEntity.ok("License activated successfully. Ticket:\n" + ticket.getBody());
 
         } catch (IllegalArgumentException e){
             return ResponseEntity.badRequest().body(e.getMessage());

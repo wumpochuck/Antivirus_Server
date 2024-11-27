@@ -1,6 +1,5 @@
 package ru.mtuci.antivirus.controllers;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -44,6 +43,11 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Validation error: " + bindingResult.getAllErrors());
         }
 
+        /// Check if user with this login already exists
+        if(userService.findUserByLogin(userDTO.getLogin()) != null){
+            return ResponseEntity.badRequest().body("User with this login already exists");
+        }
+
         User user = new User(userDTO.getLogin(), passwordEncoder.encode(userDTO.getPassword()), userDTO.getEmail(), ROLE.ROLE_USER, null);
         userService.saveUser(user);
 
@@ -60,11 +64,11 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Validation error: " + bindingResult.getAllErrors());
         }
 
-        User user = userService.getUserByLogin(userDTO.getLogin());
+        User user = userService.findUserByLogin(userDTO.getLogin());
 
         // If login not exist
         if(user == null){
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().body("User not found");
         }
 
         // If password didnt match

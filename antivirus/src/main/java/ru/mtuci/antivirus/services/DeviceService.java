@@ -31,4 +31,8 @@ public class DeviceService {
 
         return deviceRepository.save(device);
     }
+
+    public Device getDeviceByInfo(String macAddress, User user) {
+        return deviceRepository.findDeviceByMacAddressAndUser(macAddress, user);
+    }
 }

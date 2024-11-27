@@ -18,15 +18,15 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.getUserByLogin(username);
+        return userRepository.findUserByLogin(username);
     }
 
     public void saveUser(User user){
         userRepository.save(user);
     }
 
-    public User getUserByLogin(String login){
-        return userRepository.getUserByLogin(login);
+    public User findUserByLogin(String login){
+        return userRepository.findUserByLogin(login);
     }
 
     public User getUserById(Long id){

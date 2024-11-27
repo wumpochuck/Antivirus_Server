@@ -5,7 +5,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -19,6 +21,8 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "users")
 @JsonIgnoreProperties({"licenses", "devices"})
 public class User implements UserDetails {
@@ -43,10 +47,17 @@ public class User implements UserDetails {
     @Column(name = "role")
     private ROLE role;
 
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
-    @JsonIgnore
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<License> licenses;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Device> devices;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<LicenseHistory> licenseHistories;
 
     public User(Long id, String login, String passwordHash, String email, ROLE role, List<License> licenses) {
         this.id = id;
@@ -57,6 +68,16 @@ public class User implements UserDetails {
         this.licenses = licenses;
     }
 
+    public User(String login, String passwordHash, String email, ROLE role, List<License> licenses, List<Device> devices, List<LicenseHistory> licenseHistories) {
+        this.login = login;
+        this.passwordHash = passwordHash;
+        this.email = email;
+        this.role = role;
+        this.licenses = licenses;
+        this.devices = devices;
+        this.licenseHistories = licenseHistories;
+    }
+
     public User(String login, String passwordHash, String email, ROLE role, List<License> licenses) {
         this.login = login;
         this.passwordHash = passwordHash;
@@ -65,29 +86,24 @@ public class User implements UserDetails {
         this.licenses = licenses;
     }
 
-
-
-    public User() {
-    }
-
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return UserDetails.super.isAccountNonExpired();
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return UserDetails.super.isAccountNonLocked();
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return UserDetails.super.isCredentialsNonExpired();
     }
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return UserDetails.super.isEnabled();
     }
 
     @Override

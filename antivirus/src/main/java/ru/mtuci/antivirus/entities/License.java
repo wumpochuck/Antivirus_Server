@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Getter
@@ -58,6 +59,12 @@ public class License {
     @Column(name = "description")
     private String description;
 
+    @OneToMany(mappedBy = "license", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DeviceLicense> deviceLicenses;
+
+    @OneToMany(mappedBy = "license", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LicenseHistory> licenseHistories;
+
     public License(Long id, String code, User user, Product product, LicenseType type, Date firstActivationDate, Date endingDate, Boolean isBlocked, int devicesCount, User owner, int duration, String description) {
         this.id = id;
         this.code = code;
@@ -88,5 +95,31 @@ public class License {
     }
 
     public License() {
+    }
+
+    public String getBody(){
+        return String.format("License:\n" +
+                "Code: %s\n" +
+                "User: %s\n" +
+                "Product: %s\n" +
+                "Type: %s\n" +
+                "First activation date: %s\n" +
+                "Ending date: %s\n" +
+                "Is blocked: %b\n" +
+                "Devices count: %d\n" +
+                "Owner: %s\n" +
+                "Duration: %d\n" +
+                "Description: %s\n",
+                this.getCode(),
+                this.getUser().getLogin(),
+                this.getProduct().getName(),
+                this.getType().getName(),
+                this.getFirstActivationDate(),
+                this.getEndingDate(),
+                this.getIsBlocked(),
+                this.getDevicesCount(),
+                this.getOwner().getLogin(),
+                this.getDuration(),
+                this.getDescription());
     }
 }

@@ -32,7 +32,6 @@ public class ActivationController {
     }
 
     @PostMapping("/activate")
-//    @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN')")
     public ResponseEntity<?> activateLicense(@Valid @RequestBody ActivationRequest activationRequest/*, BindingResult bindingResult*/) {
         System.out.println("ActivationController: activateLicense: Started activating license, data: " + activationRequest.getActivationCode() + ", " + activationRequest.getDeviceName() + ", " + activationRequest.getMacAddress());
 
@@ -63,42 +62,5 @@ public class ActivationController {
             return ResponseEntity.status(500).body("Internal server error: " + e.getMessage());
         }
 
-//        if (bindingResult.hasErrors()) {
-//            StringBuilder errorMessage = new StringBuilder();
-//            bindingResult.getFieldErrors().forEach(error ->
-//                    errorMessage.append(error.getField())
-//                            .append(": ")
-//                            .append(error.getDefaultMessage())
-//                            .append("; ")
-//            );
-//            return ResponseEntity.badRequest().body(errorMessage.toString());
-//        }
-//        try {
-//            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//            if (authentication == null || !authentication.isAuthenticated()) {
-//                return ResponseEntity.status(403).body("User is not authenticated");
-//            }
-//
-//            String username = authentication.getName();
-//            System.out.println("ActivationController: activateLicense: Request from user: " + username);
-//
-//            String activationCode = request.getActivationCode(); // TODO rewrite logic here
-//
-//            User deviceOwner = userService.getUserByLogin(username);
-//
-//            // Register or update device
-//            Device device = deviceService.registerOrUpdateDevice(request, deviceOwner);
-//
-//            // Activate license
-//            Ticket ticket = licenseService.activateLicense(activationCode, device, username);
-//
-//            return ResponseEntity.ok(ticket);
-//
-//        } catch (IllegalArgumentException ex) {
-//            return ResponseEntity.badRequest().body(ex.getMessage());
-//        } catch (Exception ex) {
-//            // global exception handler
-//            return ResponseEntity.status(500).body("Internal server error: " + ex.getMessage());
-//        }
     }
 }

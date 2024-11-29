@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.mtuci.antivirus.entities.*;
 import ru.mtuci.antivirus.entities.DTO.LicenseRequest;
+import ru.mtuci.antivirus.repositories.DeviceRepository;
 import ru.mtuci.antivirus.repositories.LicenseRepository;
 import ru.mtuci.antivirus.utils.SignatureKeys;
 
@@ -24,15 +25,19 @@ public class LicenseService{
     private final LicenseTypeService licenseTypeService;
     private final LicenseHistoryService licenseHistoryService;
     private final DeviceLicenseService deviceLicenseService;
+    private final DeviceRepository deviceRepository;
+    private final DeviceService deviceService;
 
     @Autowired
-    public LicenseService(LicenseRepository licenseRepository, ProductService productService, UserService userService, LicenseTypeService licenseTypeService, LicenseHistoryService licenseHistoryService, DeviceLicenseService deviceLicenseService) {
+    public LicenseService(LicenseRepository licenseRepository, ProductService productService, UserService userService, LicenseTypeService licenseTypeService, LicenseHistoryService licenseHistoryService, DeviceLicenseService deviceLicenseService, DeviceRepository deviceRepository, DeviceService deviceService) {
         this.licenseRepository = licenseRepository;
         this.productService = productService;
         this.userService = userService;
         this.licenseTypeService = licenseTypeService;
         this.licenseHistoryService = licenseHistoryService;
         this.deviceLicenseService = deviceLicenseService;
+        this.deviceRepository = deviceRepository;
+        this.deviceService = deviceService;
     }
 
     /// License creation
@@ -114,6 +119,36 @@ public class LicenseService{
                 .toList();
     }
 
+    /// License updating
+
+    public Ticket updateLicense(String licenseCode, String login){
+
+        // TODO refactor throws to failure tickets (if rly needed wtf)
+
+        // Find license
+        License license = licenseRepository.getLicensesByCode(licenseCode);
+        if(license == null){
+            throw new IllegalArgumentException("License not found");
+        }
+
+        // Validate license
+        if(license.getIsBlocked()){
+            throw new IllegalArgumentException("Could not update license: license is blocked");
+        }
+
+        // Update license date
+        license.setEndingDate(new Date(System.currentTimeMillis() + license.getDuration()));
+        licenseRepository.save(license);
+
+        // Save license history
+        LicenseHistory licenseHistory = new LicenseHistory(license, license.getOwner(), "UPDATED", new Date(), "License updated");
+        licenseHistoryService.saveLicenseHistory(licenseHistory);
+
+        // Generate ticket
+        return generateTicket(license, deviceRepository.findDeviceByUser(userService.findUserByLogin(login)));
+    }
+
+
     // Other methods
 
     public Ticket generateTicket(License license, Device device){
@@ -121,7 +156,7 @@ public class LicenseService{
 
         ticket.setCurrentDate(new Date());
         ticket.setLifetime(license.getDuration()); // Ticket life time, should be decreased to const int
-        ticket.setActivationDate(new Date());
+        ticket.setActivationDate(new Date(license.getFirstActivationDate().getTime()));
         ticket.setExpirationDate(license.getEndingDate());
         ticket.setUserId(license.getOwner().getId());
         ticket.setDeviceId(device.getId());
@@ -173,9 +208,13 @@ public class LicenseService{
     }
 
     public String generateSignature(Ticket ticket){
+        SignatureKeys signatureKeys = new SignatureKeys();
 
-        // TODO Implement signature generation
-        return "signature";
+        String sign = "sign" + ticket.getCurrentDate() + signatureKeys.getPublicKey(); // TODO Implement signature generation
+
+        System.out.println("Signature: " + sign);
+        return sign;
+
     }
 
     private String generateLicenseCode(LicenseRequest licenseRequest){

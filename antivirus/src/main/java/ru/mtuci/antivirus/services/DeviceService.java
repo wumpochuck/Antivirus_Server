@@ -35,4 +35,5 @@ public class DeviceService {
     public Device getDeviceByInfo(String macAddress, User user) {
         return deviceRepository.findDeviceByMacAddressAndUser(macAddress, user);
     }
+
 }

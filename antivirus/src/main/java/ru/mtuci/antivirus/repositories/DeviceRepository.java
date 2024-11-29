@@ -9,4 +9,5 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
     Device getDeviceByMacAddress(String macAddress);
     Device findDeviceByMacAddressAndUser(String macAddress, User user);
     Device findDeviceByMacAddress(String macAddress);
+    Device findDeviceByUser(User user);
 }

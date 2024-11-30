@@ -17,6 +17,9 @@ import ru.mtuci.antivirus.services.UserService;
 import java.util.List;
 import java.util.Optional;
 
+//TODO: 1. Убрать лишние проверки (например стр. 42-43)
+//TODO: 2. Поменять логику поиска текущей лицензии из списка (передать код вместе с мак адресом 39, 60)
+
 @RestController
 @RequestMapping("/license")
 public class LicenseInfoController {

@@ -7,6 +7,8 @@ import ru.mtuci.antivirus.entities.Device;
 import ru.mtuci.antivirus.entities.User;
 import ru.mtuci.antivirus.repositories.DeviceRepository;
 
+//TODO: 1. Пересмотреть логику обновления пользователя устройства
+
 @Service
 public class DeviceService {
 

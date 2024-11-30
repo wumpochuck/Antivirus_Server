@@ -2,7 +2,7 @@
 .DS_Store
 
 antivirus/src/main/resources/application.properties
-
+.env
 
 HELP.md
 target/

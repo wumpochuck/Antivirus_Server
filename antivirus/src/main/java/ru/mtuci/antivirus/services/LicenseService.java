@@ -16,6 +16,9 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
+//TODO: 1. Добавить ЭЦП к тикету на основе полей
+//TODO: 2. Пересмотреть логику validateActivation && updateLicense
+
 @Service
 public class LicenseService{
 
@@ -101,7 +104,7 @@ public class LicenseService{
         createDeviceLicense(license, device);
 
         // Update license
-        updateLicense(license);
+        updateLicense(license); // TODO if need to change ownerId/userId, paste User into updateLicense();
 
         // Save license history
         LicenseHistory licenseHistory = new LicenseHistory(license, license.getOwner(), "ACTIVATED", new Date(), "License activated");
@@ -210,7 +213,7 @@ public class LicenseService{
     public String generateSignature(Ticket ticket){
         SignatureKeys signatureKeys = new SignatureKeys();
 
-        String sign = "sign" + ticket.getCurrentDate() + signatureKeys.getPublicKey(); // TODO Implement signature generation
+        String sign = "sign_" + ticket.getCurrentDate() + "_" + (signatureKeys.getPublicKey()); // TODO Implement signature generation
 
         System.out.println("Signature: " + sign);
         return sign;

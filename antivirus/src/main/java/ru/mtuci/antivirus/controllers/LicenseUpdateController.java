@@ -12,6 +12,8 @@ import ru.mtuci.antivirus.entities.Ticket;
 import ru.mtuci.antivirus.services.AuthenticationService;
 import ru.mtuci.antivirus.services.LicenseService;
 
+//TODO: 1. Убрать лишние проверки
+
 @RestController
 @RequestMapping("/license")
 public class LicenseUpdateController {

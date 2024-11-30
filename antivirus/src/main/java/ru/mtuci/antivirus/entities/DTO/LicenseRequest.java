@@ -12,23 +12,22 @@ import lombok.Setter;
 @NoArgsConstructor
 public class LicenseRequest {
 
-//    @NotBlank(message = "Поле productId не должно быть пустым.")
+    @NotBlank(message = "productId cannot be empty.")
     private Long productId;
 
-//    @NotBlank(message = "Поле ownerId не должно быть пустым.")
+    @NotBlank(message = "ownerId cannot be empty.")
     private Long ownerId;
 
-//    @NotBlank(message = "Поле licenseTypeId не должно быть пустым.")
+    @NotBlank(message = "licenseTypeId cannot be empty.")
     private Long licenseTypeId;
 
-    @NotBlank(message = "Поле description не должно быть пустым.")
+    @NotBlank(message = "description cannot be empty.")
     private String description;
 
-//    @NotBlank(message = "Поле deviceCount не должно быть пустым.")
+    @NotBlank(message = "deviceCount cannot be empty.")
     private Integer deviceCount;
 
-//    @NotBlank(message = "Поле duration не должно быть пустым.")
+    @NotBlank(message = "duration cannot be empty.")
     private Integer duration;
 
-    // Getters and Setters
 }

@@ -11,13 +11,14 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserRegisterDTO {
-    @NotBlank(message = "Логин не может быть пустым")
+
+    @NotBlank(message = "login cannot be empty")
     private String login;
 
-    @NotBlank(message = "Пароль не может быть пустым")
+    @NotBlank(message = "password cannot be empty")
     private String password;
 
-    @NotBlank(message = "Почта не должна быть пустая")
+    @NotBlank(message = "email cannot be empty")
     private String email;
 
 }

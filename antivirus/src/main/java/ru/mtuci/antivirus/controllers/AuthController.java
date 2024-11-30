@@ -43,7 +43,7 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Validation error: " + bindingResult.getAllErrors());
         }
 
-        /// Check if user with this login already exists
+        // Check if user with this login already exists
         if(userService.findUserByLogin(userDTO.getLogin()) != null){
             return ResponseEntity.badRequest().body("User with this login already exists");
         }
@@ -53,7 +53,6 @@ public class AuthController {
 
         UserDetails userDetails = userService.loadUserByUsername(user.getUsername());
         String token = jwtUtil.generateToken(userDetails);
-
 
         return ResponseEntity.ok("Registration competed, JWT: " + token);
     }
@@ -78,8 +77,5 @@ public class AuthController {
 
         String token = jwtUtil.generateToken(userService.loadUserByUsername(user.getUsername()));
         return ResponseEntity.ok("Login completed, JWT: " + token);
-
     }
-
-
 }

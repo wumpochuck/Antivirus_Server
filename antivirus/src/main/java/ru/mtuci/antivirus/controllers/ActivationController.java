@@ -25,7 +25,6 @@ public class ActivationController {
         this.licenseService = licenseService;
     }
 
-
     @GetMapping("/test")
     public String test() {
         return "ActivationController: Tested successfully";
@@ -33,12 +32,15 @@ public class ActivationController {
 
     @PostMapping("/activate")
     public ResponseEntity<?> activateLicense(@Valid @RequestBody ActivationRequest activationRequest/*, BindingResult bindingResult*/) {
+
+        // TODO: (if needed) check bindingResult for validation errors (@NotBlank, etc.)
+
         System.out.println("ActivationController: activateLicense: Started activating license, data: " + activationRequest.getActivationCode() + ", " + activationRequest.getDeviceName() + ", " + activationRequest.getMacAddress());
 
         try {
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if(authentication == null || !authentication.isAuthenticated()){
+            if (authentication == null || !authentication.isAuthenticated()) {
                 return ResponseEntity.status(403).body("User is not authenticated");
             }
 
@@ -56,9 +58,9 @@ public class ActivationController {
 
             return ResponseEntity.ok("License activated successfully. Ticket:\n" + ticket.getBody());
 
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(500).body("Internal server error: " + e.getMessage());
         }
 

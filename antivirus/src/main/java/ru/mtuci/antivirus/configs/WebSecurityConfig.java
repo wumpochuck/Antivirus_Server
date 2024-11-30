@@ -14,9 +14,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import ru.mtuci.antivirus.utils.JwtRequestFilter;
 
-@Configuration
-@EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true) // Позволяет использовать аннотации контроля доступа на уровне методов (PreAuthorize, PostAuthorize)
+@Configuration // Show, that this class is configuration
+@EnableWebSecurity // Enable Spring Security
+@EnableGlobalMethodSecurity(prePostEnabled = true) // Enable method security for (@PreAuthorize and @PostAuthorize annotations)
 public class WebSecurityConfig {
 
     private final JwtRequestFilter jwtRequestFilter;

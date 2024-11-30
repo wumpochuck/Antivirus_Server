@@ -26,7 +26,7 @@ public class LicenseController {
     public ResponseEntity<?> createLicense(@Valid @RequestBody LicenseRequest licenseRequest) {
         System.out.println("LicenseController: createLicense: Started creating license, data: " + licenseRequest.getDescription());
 
-        try{
+        try {
             License license = licenseService.createLicense(licenseRequest);
 
             if (license == null) {
@@ -34,7 +34,7 @@ public class LicenseController {
             }
             return ResponseEntity.ok("License created successfully, License:\n" + license.getBody());
 
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
 

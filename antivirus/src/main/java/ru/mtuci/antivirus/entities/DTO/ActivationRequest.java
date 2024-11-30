@@ -8,12 +8,12 @@ import lombok.Setter;
 @Setter
 public class ActivationRequest {
 
-    @NotBlank(message = "Поле activationCode не должно быть пустым.")
+    @NotBlank(message = "Activation code cannot be empty")
     private String activationCode;
 
-    @NotBlank(message = "Поле deviceName не должно быть пустым.")
+    @NotBlank(message = "Device name cannot be empty")
     private String deviceName;
 
-    @NotBlank(message = "Поле macAddress не должно быть пустым.")
+    @NotBlank(message = "Mac address cannot be empty")
     private String macAddress;
 }

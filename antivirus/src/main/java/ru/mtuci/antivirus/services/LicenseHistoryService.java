@@ -18,4 +18,5 @@ public class LicenseHistoryService {
     public void saveLicenseHistory(LicenseHistory licenseHistory) {
         licenseHistoryRepository.save(licenseHistory);
     }
+
 }

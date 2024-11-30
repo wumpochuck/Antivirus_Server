@@ -19,6 +19,7 @@ public class DeviceLicense {
 
     @ManyToOne
     @JoinColumn(name = "license_id", nullable = false)
+    @JsonBackReference
     private License license;
 
     @ManyToOne

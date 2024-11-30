@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface LicenseRepository extends JpaRepository<License, Long> {
     License getLicensesByCode(String code);
+    License getLicenseById(Long id);
 }

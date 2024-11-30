@@ -25,6 +25,7 @@ public class ActivationController {
         this.licenseService = licenseService;
     }
 
+
     @GetMapping("/test")
     public String test() {
         return "ActivationController: Tested successfully";

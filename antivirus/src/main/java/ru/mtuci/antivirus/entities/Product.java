@@ -41,4 +41,15 @@ public class Product {
 
     }
 
+    public String getBody(){
+        return String.format(
+                "Product:\n"
+                        + "id: %d\n"
+                        + "name: %s\n"
+                        + "isBlocked: %b\n"
+                        + "licenses: %s\n",
+                id, name, isBlocked, licenses
+        );
+    }
+
 }

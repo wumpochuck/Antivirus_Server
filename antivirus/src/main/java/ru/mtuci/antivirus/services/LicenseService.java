@@ -1,23 +1,21 @@
 package ru.mtuci.antivirus.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.mtuci.antivirus.entities.*;
 import ru.mtuci.antivirus.entities.DTO.LicenseRequest;
 import ru.mtuci.antivirus.repositories.DeviceRepository;
 import ru.mtuci.antivirus.repositories.LicenseRepository;
-import ru.mtuci.antivirus.utils.SignatureKeys;
 
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
-import java.util.List;
 
-//TODO: 1. Добавить ЭЦП к тикету на основе полей
-//TODO: 2. Пересмотреть логику validateActivation && updateLicense
+//TODO: 1. Добавить ЭЦП к тикету на основе полей ✅
+//TODO: 2. Пересмотреть логику validateActivation ✅ && updateLicense ✅
 
 @Service
 public class LicenseService{
@@ -29,10 +27,10 @@ public class LicenseService{
     private final LicenseHistoryService licenseHistoryService;
     private final DeviceLicenseService deviceLicenseService;
     private final DeviceRepository deviceRepository;
-    private final DeviceService deviceService;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public LicenseService(LicenseRepository licenseRepository, ProductService productService, UserService userService, LicenseTypeService licenseTypeService, LicenseHistoryService licenseHistoryService, DeviceLicenseService deviceLicenseService, DeviceRepository deviceRepository, DeviceService deviceService) {
+    public LicenseService(LicenseRepository licenseRepository, ProductService productService, UserService userService, LicenseTypeService licenseTypeService, LicenseHistoryService licenseHistoryService, DeviceLicenseService deviceLicenseService, DeviceRepository deviceRepository, PasswordEncoder passwordEncoder) {
         this.licenseRepository = licenseRepository;
         this.productService = productService;
         this.userService = userService;
@@ -40,8 +38,9 @@ public class LicenseService{
         this.licenseHistoryService = licenseHistoryService;
         this.deviceLicenseService = deviceLicenseService;
         this.deviceRepository = deviceRepository;
-        this.deviceService = deviceService;
+        this.passwordEncoder = passwordEncoder;
     }
+
 
     /// License creation
     public License createLicense(LicenseRequest licenseRequest) {
@@ -97,6 +96,11 @@ public class LicenseService{
             throw new IllegalArgumentException("License not found");
         }
 
+        User user = userService.findUserByLogin(login);
+        if(user == null){
+            throw new IllegalArgumentException("User not found");
+        }
+
         // Validate license
         validateActivation(license, device, login);
 
@@ -104,7 +108,7 @@ public class LicenseService{
         createDeviceLicense(license, device);
 
         // Update license
-        updateLicense(license); // TODO if need to change ownerId/userId, paste User into updateLicense();
+        updateLicenseForActivation(license, user); // TODO: 2 добавлена замена id владельца лицензии
 
         // Save license history
         LicenseHistory licenseHistory = new LicenseHistory(license, license.getOwner(), "ACTIVATED", new Date(), "License activated");
@@ -115,16 +119,29 @@ public class LicenseService{
     }
 
     /// License finding for the device
-    public List<License> getActiveLicenseForDevice(Device device, User user) {
-        return device.getDeviceLicenses().stream()
-                .map(DeviceLicense::getLicense)
-                .filter(license -> !license.getIsBlocked())
-                .toList();
+    public License getActiveLicenseForDevice(Device device, User user, String code) {
+        License license = licenseRepository.getLicensesByCode(code);
+
+        if(license == null){
+            throw new IllegalArgumentException("License not found");
+        }
+
+        DeviceLicense deviceLicense = deviceLicenseService.getDeviceLicenseByDeviceIdAndLicenseId(device.getId(), license.getId());
+
+        if(deviceLicense == null){
+            throw new IllegalArgumentException("License for this device not found");
+        }
+
+        if (license.getIsBlocked()){
+            throw new IllegalArgumentException("License is blocked");
+        }
+
+        return license;
     }
 
     /// License updating
 
-    public Ticket updateLicense(String licenseCode, String login){
+    public Ticket updateExistentLicense(String licenseCode, String login){
 
         // TODO refactor throws to failure tickets (if rly needed wtf)
 
@@ -160,7 +177,7 @@ public class LicenseService{
         ticket.setCurrentDate(new Date());
         ticket.setLifetime(license.getDuration()); // Ticket life time, should be decreased to const int
         ticket.setActivationDate(new Date(license.getFirstActivationDate().getTime()));
-        ticket.setExpirationDate(license.getEndingDate());
+        ticket.setExpirationDate(new Date(license.getEndingDate().getTime()));
         ticket.setUserId(license.getOwner().getId());
         ticket.setDeviceId(device.getId());
         ticket.setIsBlocked(false);
@@ -182,8 +199,9 @@ public class LicenseService{
                 throw new IllegalArgumentException("Could not activate license: license is expired");
             }
         }
+
         // Is license already activated
-        if (license.getFirstActivationDate() != null) {
+        if(license.getFirstActivationDate() != null) { // TODO: 2 эта проверка смотрит попытку пользователя активировать активированную лицензию
             throw new IllegalArgumentException("Could not activate license: license is already activated");
         }
 
@@ -191,8 +209,6 @@ public class LicenseService{
         if (license.getDevicesCount() <= deviceLicenseService.getDeviceLicensesByLicense(license).size()) {
             throw new IllegalArgumentException("Could not activate license: device count exceeded");
         }
-
-        // TODO Add another validation rules...
     }
 
     private void createDeviceLicense(License license, Device device) {
@@ -204,20 +220,20 @@ public class LicenseService{
         deviceLicenseService.save(deviceLicense);
     }
 
-    private void updateLicense(License license) {
+    private void updateLicenseForActivation(License license, User user) {
         license.setFirstActivationDate(new Date());
         license.setEndingDate(new Date(System.currentTimeMillis() + license.getDuration()));
+        license.setUser(user);
         licenseRepository.save(license);
     }
 
     public String generateSignature(Ticket ticket){
-        SignatureKeys signatureKeys = new SignatureKeys();
+        String signature = passwordEncoder.encode(ticket.getBodyForSigning()); // TODO: 1 добавлена адекватная подпись через PasswordEncoder
 
-        String sign = "sign_" + ticket.getCurrentDate() + "_" + (signatureKeys.getPublicKey()); // TODO Implement signature generation
+        // String body_ticket = ticket.getBodyForSigning();
+        // System.out.println("Signature matches: " + passwordEncoder.matches(body_ticket, signature));
 
-        System.out.println("Signature: " + sign);
-        return sign;
-
+        return signature;
     }
 
     private String generateLicenseCode(LicenseRequest licenseRequest){
@@ -231,5 +247,9 @@ public class LicenseService{
         }
 
         // TODO: implement / refactor license code generation...
+    }
+
+    public License getLicenseById(Long id) {
+        return licenseRepository.getLicenseById(id);
     }
 }

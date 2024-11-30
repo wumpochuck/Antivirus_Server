@@ -7,5 +7,5 @@ import ru.mtuci.antivirus.entities.LicenseHistory;
 
 @Repository
 public interface LicenseHistoryRepository extends JpaRepository<LicenseHistory, Long> {
-
+    LicenseHistory findLicenseHistoryById(Long id);
 }

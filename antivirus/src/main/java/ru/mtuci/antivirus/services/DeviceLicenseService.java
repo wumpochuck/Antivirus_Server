@@ -17,10 +17,14 @@ public class DeviceLicenseService {
     }
 
     public List<DeviceLicense> getDeviceLicensesByLicense(License license) {
-        return deviceLicenseRepository.getDeviceLicenseByLicense(license);
+        return deviceLicenseRepository.getDeviceLicensesByLicense(license);
     }
 
     public void save(DeviceLicense deviceLicense) {
         deviceLicenseRepository.save(deviceLicense);
+    }
+
+    public DeviceLicense getDeviceLicenseByDeviceIdAndLicenseId(Long deviceId, Long licenseId) {
+        return deviceLicenseRepository.getDeviceLicenseByDeviceIdAndLicenseId(deviceId, licenseId);
     }
 }

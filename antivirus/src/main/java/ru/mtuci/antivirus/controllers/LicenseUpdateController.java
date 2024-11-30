@@ -1,6 +1,7 @@
 package ru.mtuci.antivirus.controllers;
 
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,7 +13,7 @@ import ru.mtuci.antivirus.entities.Ticket;
 import ru.mtuci.antivirus.services.AuthenticationService;
 import ru.mtuci.antivirus.services.LicenseService;
 
-//TODO: 1. Убрать лишние проверки
+//TODO: 1. Убрать лишние проверки ✅
 
 @RestController
 @RequestMapping("/license")
@@ -29,14 +30,10 @@ public class LicenseUpdateController {
 
 
     @PostMapping("/update")
-    public ResponseEntity<?> updateLicense(@RequestBody LicenseUpdateRequest updateRequest){
-        try {
-            if (!authenticationService.authenticate(updateRequest.getLogin(), updateRequest.getPassword())) {
-                // TODO вот это полностью удалить вместе с сервисом
-                return ResponseEntity.status(403).body("Invalid login or password");
-            }
+    public ResponseEntity<?> updateLicense(@Valid @RequestBody LicenseUpdateRequest updateRequest){
+        try { // TODO: 1 убрана лишняя проверка аутентификации
 
-            Ticket ticket = licenseService.updateLicense(updateRequest.getLicenseKey(), updateRequest.getLogin());
+            Ticket ticket = licenseService.updateExistentLicense(updateRequest.getLicenseKey(), updateRequest.getLogin());
             if (ticket.getIsBlocked()) {
                 return ResponseEntity.status(400).body("License update unavailable: " + ticket.getSignature());
             }

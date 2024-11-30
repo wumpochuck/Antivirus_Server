@@ -9,6 +9,7 @@ import java.util.List;
 
 @Repository
 public interface DeviceLicenseRepository extends JpaRepository<DeviceLicense, Long> {
-    List<DeviceLicense> getDeviceLicenseByLicense(License license);
+    DeviceLicense getDeviceLicenseByDeviceIdAndLicenseId(Long deviceId, Long licenseId);
+    List<DeviceLicense> getDeviceLicensesByLicense(License license);
 
 }

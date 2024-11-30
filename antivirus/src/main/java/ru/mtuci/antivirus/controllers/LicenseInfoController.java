@@ -17,7 +17,7 @@ import ru.mtuci.antivirus.services.UserService;
 import java.util.List;
 import java.util.Optional;
 
-//TODO: 1. Убрать лишние проверки (например стр. 42-43)
+//TODO: 1. Убрать лишние проверки (например стр. 42-43) ✅
 //TODO: 2. Поменять логику поиска текущей лицензии из списка (передать код вместе с мак адресом 39, 60)
 
 @RestController
@@ -39,9 +39,6 @@ public class LicenseInfoController {
     public ResponseEntity<?> getLicenseInfo(@Valid @RequestParam("macAddress") String macAddress){
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication == null || !authentication.isAuthenticated()) {
-                return ResponseEntity.status(403).body("User is not authenticated");
-            }
 
             String login = authentication.getName();
             User user = userService.findUserByLogin(login);

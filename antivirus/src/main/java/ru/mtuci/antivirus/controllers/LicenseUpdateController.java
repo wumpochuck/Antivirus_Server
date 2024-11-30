@@ -32,6 +32,7 @@ public class LicenseUpdateController {
     public ResponseEntity<?> updateLicense(@RequestBody LicenseUpdateRequest updateRequest){
         try {
             if (!authenticationService.authenticate(updateRequest.getLogin(), updateRequest.getPassword())) {
+                // TODO вот это полностью удалить вместе с сервисом
                 return ResponseEntity.status(403).body("Invalid login or password");
             }
 

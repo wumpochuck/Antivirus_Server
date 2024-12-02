@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.mtuci.antivirus.entities.*;
-import ru.mtuci.antivirus.entities.DTO.LicenseRequest;
+import ru.mtuci.antivirus.entities.requests.LicenseRequest;
 import ru.mtuci.antivirus.repositories.DeviceRepository;
 import ru.mtuci.antivirus.repositories.LicenseRepository;
 
@@ -153,11 +153,15 @@ public class LicenseService{
 
         // Validate license
         if(license.getIsBlocked()){
-            throw new IllegalArgumentException("Could not update license: license is blocked");
+            throw new IllegalArgumentException("License is blocked");
+        }
+
+        if(license.getFirstActivationDate() == null){
+            throw new IllegalArgumentException("License is not activated");
         }
 
         // Update license date
-        license.setEndingDate(new Date(System.currentTimeMillis() + license.getDuration()));
+        license.setEndingDate(new Date(license.getEndingDate().getTime() + license.getDuration()));
         licenseRepository.save(license);
 
         // Save license history

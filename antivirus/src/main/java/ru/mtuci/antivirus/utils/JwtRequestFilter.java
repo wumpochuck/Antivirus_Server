@@ -35,7 +35,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
                 if(username != null && SecurityContextHolder.getContext().getAuthentication() == null){
                     UserDetails userDetails = userService.findUserByLogin(username);
-                    System.out.println("JwtRequestFilter: doFilterInternal: Someone entered filter, login: " + userDetails.getUsername());
+                    // System.out.println("JwtRequestFilter: doFilterInternal: Someone entered filter, login: " + userDetails.getUsername());
                     SecurityContextHolder.getContext().setAuthentication(jwtUtil.getAuthentication(token, userDetails));
                 }
             }
@@ -44,7 +44,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
-        System.out.println("JwtRequestFilter: doFilterInternal: Someone passed filter");
+        // System.out.println("JwtRequestFilter: doFilterInternal: Someone passed filter");
     }
 
     // Resolve token used in the request to cut off the "Bearer " part

@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import ru.mtuci.antivirus.entities.DTO.LicenseInfoRequest;
+import ru.mtuci.antivirus.entities.requests.LicenseInfoRequest;
 import ru.mtuci.antivirus.entities.Device;
 import ru.mtuci.antivirus.entities.License;
 import ru.mtuci.antivirus.entities.Ticket;
@@ -14,9 +14,6 @@ import ru.mtuci.antivirus.entities.User;
 import ru.mtuci.antivirus.services.DeviceService;
 import ru.mtuci.antivirus.services.LicenseService;
 import ru.mtuci.antivirus.services.UserService;
-
-import java.util.List;
-import java.util.Optional;
 
 //TODO: 1. Убрать лишние проверки (например стр. 42-43) ✅
 //TODO: 2. Поменять логику поиска текущей лицензии из списка (передать код вместе с мак адресом 39, 60) ✅
@@ -43,13 +40,13 @@ public class LicenseInfoController {
             String login = authentication.getName();
             User user = userService.findUserByLogin(login);
 
-            System.out.println("LicenseInfoController: getLicenseInfo: Request from user: " + login);
-            System.out.println("LicenseInfoController: getLicenseInfo: Requested MAC address: " + licenseInfoRequest.getMacAddress());
+            // System.out.println("LicenseInfoController: getLicenseInfo: Request from user: " + login);
+            // System.out.println("LicenseInfoController: getLicenseInfo: Requested MAC address: " + licenseInfoRequest.getMacAddress());
 
             // Looking for the device
             Device device = deviceService.getDeviceByInfo(licenseInfoRequest.getMacAddress(), user);
             if(device == null){
-                throw new IllegalArgumentException("Device not found");
+                throw new IllegalArgumentException("Validation error: Device not found");
             }
 
             // Getting license using mac address and code

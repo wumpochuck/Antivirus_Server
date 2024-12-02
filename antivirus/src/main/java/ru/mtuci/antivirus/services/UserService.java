@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import ru.mtuci.antivirus.entities.User;
 import ru.mtuci.antivirus.repositories.UserRepository;
 
+import java.util.List;
+
 @Service
 public class UserService implements UserDetailsService {
 
@@ -31,5 +33,13 @@ public class UserService implements UserDetailsService {
 
     public User getUserById(Long id){
         return userRepository.getUserById(id);
+    }
+
+    public List<User> getAllUsers(){
+        return userRepository.findAll();
+    }
+
+    public void deleteUser(Long id){
+        userRepository.deleteById(id);
     }
 }

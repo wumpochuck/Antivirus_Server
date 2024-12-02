@@ -5,8 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ru.mtuci.antivirus.entities.DTO.ActivationRequest;
+import ru.mtuci.antivirus.entities.requests.ActivationRequest;
 import ru.mtuci.antivirus.entities.*;
 import ru.mtuci.antivirus.services.*;
 
@@ -25,28 +26,22 @@ public class ActivationController {
         this.licenseService = licenseService;
     }
 
-
-    @GetMapping("/test")
-    public String test() {
-        return "ActivationController: Tested successfully";
-    }
-
     @PostMapping("/activate")
-    public ResponseEntity<?> activateLicense(@Valid @RequestBody ActivationRequest activationRequest/*, BindingResult bindingResult*/) {
-
-        // TODO: (if needed) check bindingResult for validation errors (@NotBlank, etc.)
-
-        System.out.println("ActivationController: activateLicense: Started activating license, data: " + activationRequest.getActivationCode() + ", " + activationRequest.getDeviceName() + ", " + activationRequest.getMacAddress());
+    public ResponseEntity<?> activateLicense(@Valid @RequestBody ActivationRequest activationRequest, BindingResult bindingResult) {
+        // System.out.println("ActivationController: activateLicense: Started activating license, data: " + activationRequest.getActivationCode() + ", " + activationRequest.getDeviceName() + ", " + activationRequest.getMacAddress());
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body("Validation error: " + bindingResult.getAllErrors());
+        }
 
         try {
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication == null || !authentication.isAuthenticated()) {
-                return ResponseEntity.status(403).body("User is not authenticated");
+                return ResponseEntity.status(401).body("Validation error: User is not authenticated");
             }
 
             // Get authenticated user
-            System.out.println("ActivationController: activateLicense: Request from user: " + authentication.getName());
+            // System.out.println("ActivationController: activateLicense: Request from user: " + authentication.getName());
             User user = userService.findUserByLogin(authentication.getName());
 
             // Register or update device
@@ -60,7 +55,7 @@ public class ActivationController {
             return ResponseEntity.ok("License activated successfully. Ticket:\n" + ticket.getBody());
 
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body("Validation error: " + e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Internal server error: " + e.getMessage());
         }

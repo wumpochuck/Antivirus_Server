@@ -3,9 +3,10 @@ package ru.mtuci.antivirus.controllers;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ru.mtuci.antivirus.entities.DTO.DeviceRequest;
+import ru.mtuci.antivirus.entities.requests.DeviceRequest;
 import ru.mtuci.antivirus.entities.Device;
 import ru.mtuci.antivirus.services.DeviceService;
 
@@ -13,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/devices")
+@PreAuthorize("hasRole('ROLE_ADMIN')")
 public class DeviceController {
 
     private final DeviceService deviceService;

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.mtuci.antivirus.entities.DTO.LicenseUpdateRequest;
+import ru.mtuci.antivirus.entities.requests.LicenseUpdateRequest;
 import ru.mtuci.antivirus.entities.Ticket;
 import ru.mtuci.antivirus.services.AuthenticationService;
 import ru.mtuci.antivirus.services.LicenseService;

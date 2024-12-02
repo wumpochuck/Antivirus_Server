@@ -3,9 +3,10 @@ package ru.mtuci.antivirus.controllers;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ru.mtuci.antivirus.entities.DTO.LicenseTypeRequest;
+import ru.mtuci.antivirus.entities.requests.LicenseTypeRequest;
 import ru.mtuci.antivirus.entities.LicenseType;
 import ru.mtuci.antivirus.services.LicenseTypeService;
 
@@ -13,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/license-types")
+@PreAuthorize("hasRole('ADMIN')")
 public class LicenseTypeController {
 
     private final LicenseTypeService licenseTypeService;

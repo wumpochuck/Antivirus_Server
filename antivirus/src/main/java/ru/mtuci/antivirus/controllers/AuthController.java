@@ -32,11 +32,6 @@ public class AuthController {
         this.jwtUtil = jwtUtil;
     }
 
-    @PostMapping("/test")
-    public String test() {
-        return "Tested successfully";
-    }
-
     @PostMapping("/register")
     public ResponseEntity<?> userRegistration(@Valid @RequestBody UserRegisterDTO userDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -45,7 +40,7 @@ public class AuthController {
 
         // Check if user with this login already exists
         if(userService.findUserByLogin(userDTO.getLogin()) != null){
-            return ResponseEntity.badRequest().body("User with this login already exists");
+            return ResponseEntity.badRequest().body("Validation error:  User with this login already exists");
         }
 
         User user = new User(userDTO.getLogin(), passwordEncoder.encode(userDTO.getPassword()), userDTO.getEmail(), ROLE.ROLE_USER, null);
@@ -54,7 +49,7 @@ public class AuthController {
         UserDetails userDetails = userService.loadUserByUsername(user.getUsername());
         String token = jwtUtil.generateToken(userDetails);
 
-        return ResponseEntity.ok("Registration competed, JWT: " + token);
+        return ResponseEntity.ok("Registration completed, JWT: Bearer " + token);
     }
 
     @PostMapping("/login")
@@ -67,7 +62,7 @@ public class AuthController {
 
         // If login not exist
         if(user == null){
-            return ResponseEntity.badRequest().body("User not found");
+            return ResponseEntity.badRequest().body("Validation error: User not found");
         }
 
         // If password didnt match
@@ -76,6 +71,6 @@ public class AuthController {
         }
 
         String token = jwtUtil.generateToken(userService.loadUserByUsername(user.getUsername()));
-        return ResponseEntity.ok("Login completed, JWT: " + token);
+        return ResponseEntity.ok("Login completed, JWT: Bearer " + token);
     }
 }

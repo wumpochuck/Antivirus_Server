@@ -29,7 +29,7 @@ public class LicenseController {
             License license = licenseService.createLicense(licenseRequest);
 
             if (license == null) {
-                return ResponseEntity.badRequest().body("License error: License creation failed");
+                return ResponseEntity.badRequest().body("Internal server error: License creation failed");
             }
             return ResponseEntity.ok("License created successfully, License:\n" + license.getBody());
 

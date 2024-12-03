@@ -50,7 +50,7 @@ public class LicenseInfoController {
             }
 
             // Getting license using mac address and code
-            License activeLicense = licenseService.getActiveLicenseForDevice(device, user, licenseInfoRequest.getCode()); // TODO: 2 изменена логика внутри метода
+            License activeLicense = licenseService.getActiveLicenseForDevice(device, user, licenseInfoRequest.getLicenseCode()); // TODO: 2 изменена логика внутри метода
 
             // Generating ticket
             Ticket ticket = licenseService.generateTicket(activeLicense, device);

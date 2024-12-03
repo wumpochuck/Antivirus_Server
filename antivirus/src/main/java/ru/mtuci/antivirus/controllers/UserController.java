@@ -27,7 +27,7 @@ public class UserController {
     @GetMapping("/info/{id}")
     public ResponseEntity<?> getUserInfo(@PathVariable Long id){
         User user = userService.getUserById(id);
-        return ResponseEntity.status(200).body("Пользователь: " + user.toString());
+        return ResponseEntity.status(200).body("User: " + user.toString());
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -41,25 +41,33 @@ public class UserController {
     public ResponseEntity<String> updateUser(@RequestBody UserRequest user, @AuthenticationPrincipal UserDetails userDetails) {
         try {
             String findUsername = userDetails.getUsername();
-
             User currentUser = userService.findUserByLogin(findUsername);
 
-            if (user.getLogin() != null) {
+            if (user.getLogin() != null && !user.getLogin().equals(currentUser.getLogin())) {
+                if (userService.existsByLogin(user.getLogin())) {
+                    return ResponseEntity.status(400).body("Validation error: login already exists");
+                }
+
                 currentUser.setLogin(user.getLogin());
             }
-            if (user.getEmail() != null) {
+
+            if (user.getEmail() != null && !user.getEmail().equals(currentUser.getEmail())) {
+                if (userService.existsByEmail(user.getEmail())) {
+                    return ResponseEntity.status(400).body("Validation error: email already exists");
+                }
                 currentUser.setEmail(user.getEmail());
             }
+
             if (user.getPasswordHash() != null) {
                 currentUser.setPasswordHash(passwordEncoder.encode(user.getPasswordHash()));
             }
 
             userService.saveUser(currentUser);
 
-            return ResponseEntity.status(200).body("Польователь: " + currentUser.getLogin() + " успешно обновлен");
+            return ResponseEntity.status(200).body("User" + currentUser.getLogin() + " updated");
 
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("Ошибка при обновлении пользователя");
+            return ResponseEntity.status(500).body("Internal server error: " + e.getMessage());
         }
     }
 
@@ -71,9 +79,9 @@ public class UserController {
             User user = userService.getUserById(id);
 
             userService.deleteUser(id);
-            return ResponseEntity.status(200).body("Пользователь с id: " + id + " удален");
+            return ResponseEntity.status(200).body("User with id: " + id + " deleted");
         } catch (Exception e){
-            return ResponseEntity.status(500).body("Ошибка при удалении пользователя");
+            return ResponseEntity.status(500).body("Internal server error: " + e.getMessage());
         }
     }
 }

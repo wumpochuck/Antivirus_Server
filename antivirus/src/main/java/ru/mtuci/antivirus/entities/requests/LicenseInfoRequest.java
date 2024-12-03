@@ -17,6 +17,6 @@ public class LicenseInfoRequest {
     private String macAddress;
 
     @NotBlank(message = "Code cannot be empty")
-    private String code;
+    private String licenseCode;
 
 }

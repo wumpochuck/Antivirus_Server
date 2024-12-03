@@ -39,8 +39,13 @@ public class AuthController {
         }
 
         // Check if user with this login already exists
-        if(userService.findUserByLogin(userDTO.getLogin()) != null){
+        if(userService.existsByLogin(userDTO.getLogin())){
             return ResponseEntity.badRequest().body("Validation error:  User with this login already exists");
+        }
+
+        // Check if user with this email already exists
+        if(userService.existsByEmail(userDTO.getEmail())){
+            return ResponseEntity.badRequest().body("Validation error:  User with this email already exists");
         }
 
         User user = new User(userDTO.getLogin(), passwordEncoder.encode(userDTO.getPassword()), userDTO.getEmail(), ROLE.ROLE_USER, null);

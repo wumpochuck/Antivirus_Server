@@ -18,6 +18,6 @@ public class LicenseUpdateRequest {
     @NotBlank(message = "Password cannot be empty")
     private String password;
 
-    @NotBlank(message = "License key cannot be empty")
-    private String licenseKey;
+    @NotBlank(message = "License code cannot be empty")
+    private String licenseCode;
 }

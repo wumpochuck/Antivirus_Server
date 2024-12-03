@@ -31,7 +31,7 @@ public class LicenseHistoryController {
             LicenseHistory licenseHistory = licenseHistoryService.getLicenseHistoryById(id);
             return ResponseEntity.ok(licenseHistory);
         } catch (Exception e) {
-            return ResponseEntity.status(404).body("Запись с id " + id + " не найдена");
+            return ResponseEntity.status(404).body("User with id " + id + " not found");
         }
     }
 
@@ -39,9 +39,9 @@ public class LicenseHistoryController {
     public ResponseEntity<String> deleteLicenseHistoryById(@PathVariable Long id) {
         try {
             licenseHistoryService.deleteLicenseHistoryById(id);
-            return ResponseEntity.ok("Запись с id " + id + " успешно удалена");
+            return ResponseEntity.ok("User with id " + id + " deleted");
         } catch (Exception e) {
-            return ResponseEntity.status(404).body("Запись с id " + id + " не найдена");
+            return ResponseEntity.status(404).body("User with id " + id + " not found");
         }
     }
 }

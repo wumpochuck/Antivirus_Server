@@ -1,5 +1,6 @@
 package ru.mtuci.antivirus.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,10 +19,12 @@ public class LicenseHistory {
 
     @ManyToOne
     @JoinColumn(name = "license_id")
+    @JsonBackReference
     private License license;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonBackReference
     private User user;
 
     @Column(name = "status")

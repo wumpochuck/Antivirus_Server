@@ -19,24 +19,23 @@ import ru.mtuci.antivirus.services.LicenseService;
 @RequestMapping("/license")
 public class LicenseUpdateController {
 
-    private final AuthenticationService authenticationService;
     private final LicenseService licenseService;
 
     @Autowired
-    public LicenseUpdateController(AuthenticationService authenticationService, LicenseService licenseService) {
-        this.authenticationService = authenticationService;
+    public LicenseUpdateController(LicenseService licenseService) {
         this.licenseService = licenseService;
     }
-
 
     @PostMapping("/update")
     public ResponseEntity<?> updateLicense(@Valid @RequestBody LicenseUpdateRequest updateRequest){
         try { // TODO: 1 убрана лишняя проверка аутентификации
 
-            Ticket ticket = licenseService.updateExistentLicense(updateRequest.getLicenseKey(), updateRequest.getLogin());
-            if (ticket.getIsBlocked()) {
-                return ResponseEntity.status(400).body("License update unavailable: " + ticket.getSignature());
-            }
+            Ticket ticket = licenseService.updateExistentLicense(updateRequest.getLicenseCode(), updateRequest.getLogin());
+
+            /// Я не помню зачем это, но лучше не убирать а то вдруг понадобится | 03.12.24
+            // if (ticket.getIsBlocked()) {
+            //     return ResponseEntity.status(400).body("License update unavailable: " + ticket.getSignature());
+            // }
 
             return ResponseEntity.ok("License update successful, Ticket:\n" + ticket.getBody());
         } catch (IllegalArgumentException e){

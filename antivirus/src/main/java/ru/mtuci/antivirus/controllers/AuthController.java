@@ -6,16 +6,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.mtuci.antivirus.entities.DTO.UserLoginDTO;
 import ru.mtuci.antivirus.entities.DTO.UserRegisterDTO;
 import ru.mtuci.antivirus.entities.ENUMS.ROLE;
 import ru.mtuci.antivirus.entities.User;
 import ru.mtuci.antivirus.services.UserService;
 import ru.mtuci.antivirus.utils.JwtUtil;
+
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/auth")
@@ -25,6 +24,9 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;;
 
+    private static final Logger logger = Logger.getLogger(AuthController.class.getName());
+
+
     @Autowired
     public AuthController(UserService userService, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
         this.userService = userService;
@@ -32,11 +34,18 @@ public class AuthController {
         this.jwtUtil = jwtUtil;
     }
 
+    @GetMapping("/test")
+    public String test(){
+        return "Hello";
+    }
+
     @PostMapping("/register")
-    public ResponseEntity<?> userRegistration(@Valid @RequestBody UserRegisterDTO userDTO, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body("Validation error: " + bindingResult.getAllErrors());
-        }
+    public ResponseEntity<?> userRegistration(@Valid @RequestBody UserRegisterDTO userDTO/*, BindingResult bindingResult*/) {
+        // if (bindingResult.hasErrors()) {
+        //    return ResponseEntity.badRequest().body("Validation error: " + bindingResult.getAllErrors());
+        // }
+
+        logger.info("Received request body: " + userDTO.toString());
 
         // Check if user with this login already exists
         if(userService.existsByLogin(userDTO.getLogin())){

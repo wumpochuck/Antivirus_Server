@@ -21,4 +21,12 @@ public class UserRegisterDTO {
     @NotBlank(message = "email cannot be empty")
     private String email;
 
+    @Override
+    public String toString() {
+        return "UserRegisterDTO{" +
+                "login='" + login + '\'' +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                '}';
+    }
 }

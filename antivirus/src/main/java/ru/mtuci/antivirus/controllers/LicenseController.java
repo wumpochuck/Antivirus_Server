@@ -31,7 +31,7 @@ public class LicenseController {
             if (license == null) {
                 return ResponseEntity.badRequest().body("Internal server error: License creation failed");
             }
-            return ResponseEntity.ok("License created successfully, License:\n" + license.getBody());
+            return ResponseEntity.ok("License created successfully. " + license.toString());
 
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body("Validation error: " + e.getMessage());

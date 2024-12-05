@@ -99,29 +99,21 @@ public class License {
     public License() {
     }
 
-    public String getBody(){
-        return String.format("License:\n" +
-                "Code: %s\n" +
-                "User: %s\n" +
-                "Product: %s\n" +
-                "Type: %s\n" +
-                "First activation date: %s\n" +
-                "Ending date: %s\n" +
-                "Is blocked: %b\n" +
-                "Devices count: %d\n" +
-                "Owner: %s\n" +
-                "Duration: %d\n" +
-                "Description: %s\n",
-                this.getCode(),
-                this.getUser().getLogin(),
-                this.getProduct().getName(),
-                this.getType().getName(),
-                this.getFirstActivationDate(),
-                this.getEndingDate(),
-                this.getIsBlocked(),
-                this.getDevicesCount(),
-                this.getOwner().getLogin(),
-                this.getDuration(),
-                this.getDescription());
+    @Override
+    public String toString() {
+        return "License{" +
+                "id=" + id +
+                ", code='" + code + '\'' +
+                ", user=" + user.getId() +
+                ", product=" + product +
+                ", type=" + type.getName() +
+                ", firstActivationDate=" + firstActivationDate +
+                ", endingDate=" + endingDate +
+                ", isBlocked=" + isBlocked +
+                ", devicesCount=" + devicesCount +
+                ", owner=" + owner.getId() +
+                ", duration=" + duration +
+                ", description='" + description + '\'' +
+                '}';
     }
 }

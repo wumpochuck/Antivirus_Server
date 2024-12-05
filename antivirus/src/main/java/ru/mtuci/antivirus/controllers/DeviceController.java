@@ -30,13 +30,13 @@ public class DeviceController {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
         Device device = deviceService.createDevice(deviceRequest);
-        return ResponseEntity.ok(device.getBody());
+        return ResponseEntity.ok(device.toString());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getDevice(@PathVariable Long id) {
         Device device = deviceService.getDeviceById(id);
-        return ResponseEntity.ok(device.getBody());
+        return ResponseEntity.ok(device.toString());
     }
 
     @PutMapping("/{id}")
@@ -45,7 +45,7 @@ public class DeviceController {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
         Device device = deviceService.updateDevice(id, deviceRequest);
-        return ResponseEntity.ok(device.getBody());
+        return ResponseEntity.ok(device.toString());
     }
 
     @DeleteMapping("/{id}")

@@ -64,7 +64,7 @@ public class UserController {
 
             userService.saveUser(currentUser);
 
-            return ResponseEntity.status(200).body("User" + currentUser.getLogin() + " updated");
+            return ResponseEntity.status(200).body("User " + currentUser.getLogin() + " updated");
 
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Internal server error: " + e.getMessage());

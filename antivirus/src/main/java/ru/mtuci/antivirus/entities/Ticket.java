@@ -42,24 +42,18 @@ public class Ticket {
         this.isBlocked = isBlocked;
     }
 
-    public String getBody(){
-        return String.format("Ticket:\n" +
-                "Current date: %s\n" +
-                "Lifetime: %d\n" +
-                "Activation date: %s\n" +
-                "Expiration date: %s\n" +
-                "User ID: %d\n" +
-                "Device ID: %d\n" +
-                "Is blocked: %b\n" +
-                "Signature: %s\n",
-                this.getCurrentDate(),
-                this.getLifetime(),
-                this.getActivationDate(),
-                this.getExpirationDate(),
-                this.getUserId(),
-                this.getDeviceId(),
-                this.getIsBlocked(),
-                this.getSignature());
+    @Override
+    public String toString() {
+        return "Ticket{" +
+                "currentDate=" + currentDate +
+                ", lifetime=" + lifetime +
+                ", activationDate=" + activationDate +
+                ", expirationDate=" + expirationDate +
+                ", userId=" + userId +
+                ", deviceId=" + deviceId +
+                ", isBlocked=" + isBlocked +
+                ", signature='" + signature + '\'' +
+                '}';
     }
 
     public String getBodyForSigning(){

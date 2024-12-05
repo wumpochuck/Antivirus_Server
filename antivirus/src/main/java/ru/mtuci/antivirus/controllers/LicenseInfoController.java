@@ -55,7 +55,7 @@ public class LicenseInfoController {
             // Generating ticket
             Ticket ticket = licenseService.generateTicket(activeLicense, device);
 
-            return ResponseEntity.ok("Licenses found. Ticket:\n" + ticket.getBody());
+            return ResponseEntity.ok("Licenses found. " + ticket.toString());
 
         } catch (Exception e){
             return ResponseEntity.status(500).body("Internal server error: " + e.getMessage());

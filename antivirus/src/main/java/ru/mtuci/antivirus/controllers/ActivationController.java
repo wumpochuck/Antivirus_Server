@@ -52,7 +52,7 @@ public class ActivationController {
             String login = user.getLogin();
             Ticket ticket = licenseService.activateLicense(activationCode, device, login);
 
-            return ResponseEntity.ok("License activated successfully. Ticket:\n" + ticket.getBody());
+            return ResponseEntity.ok("License activated successfully. " + ticket.toString());
 
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body("Validation error: " + e.getMessage());

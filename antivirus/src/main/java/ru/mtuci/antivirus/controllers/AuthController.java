@@ -22,7 +22,8 @@ public class AuthController {
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;;
+    private final JwtUtil jwtUtil;
+    ;
 
     private static final Logger logger = Logger.getLogger(AuthController.class.getName());
 
@@ -35,25 +36,25 @@ public class AuthController {
     }
 
     @GetMapping("/test")
-    public String test(){
+    public String test() {
         return "Hello";
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> userRegistration(@Valid @RequestBody UserRegisterDTO userDTO/*, BindingResult bindingResult*/) {
-        // if (bindingResult.hasErrors()) {
-        //    return ResponseEntity.badRequest().body("Validation error: " + bindingResult.getAllErrors());
-        // }
+    public ResponseEntity<?> userRegistration(@Valid @RequestBody UserRegisterDTO userDTO, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body("Validation error: " + bindingResult.getAllErrors());
+        }
 
         logger.info("Received request body: " + userDTO.toString());
 
         // Check if user with this login already exists
-        if(userService.existsByLogin(userDTO.getLogin())){
+        if (userService.existsByLogin(userDTO.getLogin())) {
             return ResponseEntity.badRequest().body("Validation error:  User with this login already exists");
         }
 
         // Check if user with this email already exists
-        if(userService.existsByEmail(userDTO.getEmail())){
+        if (userService.existsByEmail(userDTO.getEmail())) {
             return ResponseEntity.badRequest().body("Validation error:  User with this email already exists");
         }
 
@@ -63,7 +64,7 @@ public class AuthController {
         UserDetails userDetails = userService.loadUserByUsername(user.getUsername());
         String token = jwtUtil.generateToken(userDetails);
 
-        return ResponseEntity.ok("Registration completed, JWT: Bearer " + token);
+        return ResponseEntity.ok("Registration completed, JWT{Bearer " + token + "}");
     }
 
     @PostMapping("/login")
@@ -75,16 +76,16 @@ public class AuthController {
         User user = userService.findUserByLogin(userDTO.getLogin());
 
         // If login not exist
-        if(user == null){
+        if (user == null) {
             return ResponseEntity.badRequest().body("Validation error: User not found");
         }
 
         // If password didnt match
-        if(!passwordEncoder.matches(userDTO.getPassword(), user.getPassword())){
-            return ResponseEntity.status(401).build();
+        if (!passwordEncoder.matches(userDTO.getPassword(), user.getPassword())) {
+            return ResponseEntity.status(401).body("Validation error: Password is incorrect");
         }
 
         String token = jwtUtil.generateToken(userService.loadUserByUsername(user.getUsername()));
-        return ResponseEntity.ok("Login completed, JWT: Bearer " + token);
+        return ResponseEntity.ok("Login completed, JWT{Bearer " + token + "}");
     }
 }

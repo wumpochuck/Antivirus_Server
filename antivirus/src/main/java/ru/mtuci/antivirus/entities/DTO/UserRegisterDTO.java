@@ -1,5 +1,6 @@
 package ru.mtuci.antivirus.entities.DTO;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,6 +20,7 @@ public class UserRegisterDTO {
     private String password;
 
     @NotBlank(message = "email cannot be empty")
+    @Email(message = "email should be valid")
     private String email;
 
     @Override

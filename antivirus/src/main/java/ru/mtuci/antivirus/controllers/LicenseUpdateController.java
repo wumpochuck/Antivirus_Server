@@ -37,7 +37,7 @@ public class LicenseUpdateController {
             //     return ResponseEntity.status(400).body("License update unavailable: " + ticket.getSignature());
             // }
 
-            return ResponseEntity.ok("License update successful, Ticket:\n" + ticket.getBody());
+            return ResponseEntity.ok("License update successful. " + ticket.toString());
         } catch (IllegalArgumentException e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }

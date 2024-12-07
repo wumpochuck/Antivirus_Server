@@ -20,4 +20,6 @@ public class LicenseUpdateRequest {
 
     @NotBlank(message = "License code cannot be empty")
     private String licenseCode;
+
+    private String macAddress;
 }

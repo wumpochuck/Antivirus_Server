@@ -14,7 +14,7 @@ public class LicenseRequest {
 
     private Long productId;
 
-    private Long ownerId;
+    private Long userId;
 
     private Long licenseTypeId;
 

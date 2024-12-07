@@ -30,7 +30,7 @@ public class LicenseUpdateController {
     public ResponseEntity<?> updateLicense(@Valid @RequestBody LicenseUpdateRequest updateRequest){
         try { // TODO: 1 убрана лишняя проверка аутентификации
 
-            Ticket ticket = licenseService.updateExistentLicense(updateRequest.getLicenseCode(), updateRequest.getLogin());
+            Ticket ticket = licenseService.updateExistentLicense(updateRequest.getLicenseCode(), updateRequest.getLogin(), updateRequest.getMacAddress());
 
             /// Я не помню зачем это, но лучше не убирать а то вдруг понадобится | 03.12.24
             // if (ticket.getIsBlocked()) {

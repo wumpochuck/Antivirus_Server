@@ -104,7 +104,7 @@ public class License {
         return "License{" +
                 "id=" + id +
                 ", code='" + code + '\'' +
-                ", user=" + user.getId() +
+                ", user=" + String.valueOf(user == null ? null : user.getId()) +
                 ", product=" + product +
                 ", type=" + type.getName() +
                 ", firstActivationDate=" + firstActivationDate +

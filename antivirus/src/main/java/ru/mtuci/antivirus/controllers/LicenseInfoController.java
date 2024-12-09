@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.mtuci.antivirus.entities.requests.LicenseInfoRequest;
 import ru.mtuci.antivirus.entities.Device;
@@ -14,6 +15,8 @@ import ru.mtuci.antivirus.entities.User;
 import ru.mtuci.antivirus.services.DeviceService;
 import ru.mtuci.antivirus.services.LicenseService;
 import ru.mtuci.antivirus.services.UserService;
+
+import java.util.Objects;
 
 //TODO: 1. Убрать лишние проверки (например стр. 42-43) ✅
 //TODO: 2. Поменять логику поиска текущей лицензии из списка (передать код вместе с мак адресом 39, 60) ✅
@@ -34,20 +37,28 @@ public class LicenseInfoController {
     }
 
     @GetMapping("/info")
-    public ResponseEntity<?> getLicenseInfo(@Valid @RequestBody LicenseInfoRequest licenseInfoRequest){
+    public ResponseEntity<?> getLicenseInfo(@Valid @RequestBody LicenseInfoRequest licenseInfoRequest, BindingResult bindingResult){
+        if (bindingResult.hasErrors()) {
+            String msg = Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage();
+            return ResponseEntity.status(400).body("Validation error: " + msg);
+        }
+
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();     // TODO: 1 убрано здесь
-            String login = authentication.getName();
-            User user = userService.findUserByLogin(login);
-
-            // System.out.println("LicenseInfoController: getLicenseInfo: Request from user: " + login);
-            // System.out.println("LicenseInfoController: getLicenseInfo: Requested MAC address: " + licenseInfoRequest.getMacAddress());
+            User user = userService.findUserByLogin(authentication.getName());
 
             // Looking for the device
             Device device = deviceService.getDeviceByInfo(licenseInfoRequest.getMacAddress(), user);
+
+            if(!Objects.equals(device.getUser().getId(), user.getId())){
+                throw new IllegalArgumentException("Validation error: Device not found");
+            }
+
             if(device == null){
                 throw new IllegalArgumentException("Validation error: Device not found");
             }
+
+
 
             // Getting license using mac address and code
             License activeLicense = licenseService.getActiveLicenseForDevice(device, user, licenseInfoRequest.getLicenseCode()); // TODO: 2 изменена логика внутри метода
@@ -55,9 +66,12 @@ public class LicenseInfoController {
             // Generating ticket
             Ticket ticket = licenseService.generateTicket(activeLicense, device);
 
-            return ResponseEntity.ok("Licenses found. " + ticket.toString());
+            return ResponseEntity.status(200).body("Licenses found. " + ticket.toString());
 
-        } catch (Exception e){
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(400).body("Validation error: " + e.getMessage());
+        }
+        catch (Exception e){
             return ResponseEntity.status(500).body("Internal server error: " + e.getMessage());
         }
     }

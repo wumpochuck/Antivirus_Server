@@ -11,6 +11,7 @@ import ru.mtuci.antivirus.entities.Device;
 import ru.mtuci.antivirus.services.DeviceService;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/devices")
@@ -27,36 +28,40 @@ public class DeviceController {
     @PostMapping
     public ResponseEntity<?> createDevice(@Valid @RequestBody DeviceRequest deviceRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+            String msg = Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage();
+            return ResponseEntity.status(400).body("Validation error: " + msg);
         }
+
         Device device = deviceService.createDevice(deviceRequest);
-        return ResponseEntity.ok(device.toString());
+        return ResponseEntity.status(201).body(device);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getDevice(@PathVariable Long id) {
         Device device = deviceService.getDeviceById(id);
-        return ResponseEntity.ok(device.toString());
+        return ResponseEntity.status(200).body(device.toString());
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateDevice(@PathVariable Long id, @Valid @RequestBody DeviceRequest deviceRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+            String msg = Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage();
+            return ResponseEntity.status(400).body("Validation error: " + msg);
         }
+
         Device device = deviceService.updateDevice(id, deviceRequest);
-        return ResponseEntity.ok(device.toString());
+        return ResponseEntity.status(200).body(device.toString());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteDevice(@PathVariable Long id) {
+    public ResponseEntity<?> deleteDevice(@PathVariable Long id) {
         deviceService.deleteDevice(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(200).body("Device with id " + id + " was deleted");
     }
 
     @GetMapping
     public ResponseEntity<List<Device>> getAllDevices() {
         List<Device> devices = deviceService.getAllDevices();
-        return ResponseEntity.ok(devices);
+        return ResponseEntity.status(200).body(devices);
     }
 }

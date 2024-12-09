@@ -22,14 +22,14 @@ public class LicenseHistoryController {
     @GetMapping
     public ResponseEntity<List<LicenseHistory>> getAllLicenseHistories() {
         List<LicenseHistory> licenseHistories = licenseHistoryService.getAllLicenseHistories();
-        return ResponseEntity.ok(licenseHistories);
+        return ResponseEntity.status(200).body(licenseHistories);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getLicenseHistoryById(@PathVariable Long id) {
         try {
             LicenseHistory licenseHistory = licenseHistoryService.getLicenseHistoryById(id);
-            return ResponseEntity.ok(licenseHistory);
+            return ResponseEntity.status(200).body(licenseHistory.toString());
         } catch (Exception e) {
             return ResponseEntity.status(404).body("User with id " + id + " not found");
         }
@@ -39,7 +39,7 @@ public class LicenseHistoryController {
     public ResponseEntity<String> deleteLicenseHistoryById(@PathVariable Long id) {
         try {
             licenseHistoryService.deleteLicenseHistoryById(id);
-            return ResponseEntity.ok("User with id " + id + " deleted");
+            return ResponseEntity.status(200).body("User with id " + id + " deleted");
         } catch (Exception e) {
             return ResponseEntity.status(404).body("User with id " + id + " not found");
         }

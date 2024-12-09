@@ -11,6 +11,7 @@ import ru.mtuci.antivirus.entities.LicenseType;
 import ru.mtuci.antivirus.services.LicenseTypeService;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/license-types")
@@ -27,36 +28,40 @@ public class LicenseTypeController {
     @PostMapping
     public ResponseEntity<?> createLicenseType(@Valid @RequestBody LicenseTypeRequest licenseTypeRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+            String msg = Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage();
+            return ResponseEntity.status(400).body("Validation error: " + msg);
         }
+
         LicenseType licenseType = licenseTypeService.createLicenseType(licenseTypeRequest);
-        return ResponseEntity.ok(licenseType);
+        return ResponseEntity.status(200).body(licenseType);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getLicenseType(@PathVariable Long id) {
         LicenseType licenseType = licenseTypeService.getLicenseTypeById(id);
-        return ResponseEntity.ok(licenseType);
+        return ResponseEntity.status(200).body(licenseType.toString());
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateLicenseType(@PathVariable Long id, @Valid @RequestBody LicenseTypeRequest licenseTypeRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+            String msg = Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage();
+            return ResponseEntity.status(400).body("Validation error: " + msg);
         }
+
         LicenseType licenseType = licenseTypeService.updateLicenseType(id, licenseTypeRequest);
-        return ResponseEntity.ok(licenseType);
+        return ResponseEntity.status(200).body(licenseType);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteLicenseType(@PathVariable Long id) {
+    public ResponseEntity<?> deleteLicenseType(@PathVariable Long id) {
         licenseTypeService.deleteLicenseType(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(200).body("License type with id " + id + " was deleted");
     }
 
     @GetMapping
     public ResponseEntity<List<LicenseType>> getAllLicenseTypes() {
         List<LicenseType> licenseTypes = licenseTypeService.getAllLicenseTypes();
-        return ResponseEntity.ok(licenseTypes);
+        return ResponseEntity.status(200).body(licenseTypes);
     }
 }

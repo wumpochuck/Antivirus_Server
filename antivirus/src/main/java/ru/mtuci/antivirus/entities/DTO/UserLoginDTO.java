@@ -17,4 +17,12 @@ public class UserLoginDTO {
 
     @NotBlank(message = "password cannot be empty")
     private String password;
+
+    @Override
+    public String toString() {
+        return "UserLoginDTO{" +
+                "login='" + login + '\'' +
+                ", password='" + password + '\'' +
+                '}';
+    }
 }

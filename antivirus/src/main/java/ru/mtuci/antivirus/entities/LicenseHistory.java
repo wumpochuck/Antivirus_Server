@@ -46,4 +46,16 @@ public class LicenseHistory {
 
     public LicenseHistory() {
     }
+
+    @Override
+    public String toString() {
+        return "LicenseHistory{" +
+                "id=" + id +
+                ", license=" + license +
+                ", user=" + user +
+                ", status='" + status + '\'' +
+                ", changeDate=" + changeDate +
+                ", description='" + description + '\'' +
+                '}';
+    }
 }

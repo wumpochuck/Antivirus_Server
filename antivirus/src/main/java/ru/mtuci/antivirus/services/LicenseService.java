@@ -102,19 +102,20 @@ public class LicenseService{
             throw new IllegalArgumentException("User not found");
         }
 
+
+        if(license.getUser() != null){
+            if(license.getUser().getId().equals(user.getId())){
+                throw new IllegalArgumentException("Wrong user");
+            }
+        }
+
+        // Validate license
+        validateActivation(license, device, login);
+
         // Update license
         if(license.getFirstActivationDate() == null){
             updateLicenseForActivation(license, user); // TODO: 2 добавлена замена id владельца лицензии
         }
-
-        if(license.getUser().getId().equals(user.getId())){
-            throw new IllegalArgumentException("Wrong user");
-        }
-
-        // Проверять дату первой активации тут
-
-        // Validate license
-        validateActivation(license, device, login);
 
         // Create device license
         createDeviceLicense(license, device);
@@ -204,19 +205,19 @@ public class LicenseService{
 
         // Is license blocked
         if (license.getIsBlocked()) {
-            throw new IllegalArgumentException("Could not activate license: license is blocked");
+            throw new IllegalArgumentException("License is blocked");
         }
 
         // Is license expired
         if(license.getEndingDate() != null) {
             if (license.getEndingDate().before(new Date())) {
-                throw new IllegalArgumentException("Could not activate license: license is expired");
+                throw new IllegalArgumentException("License is expired");
             }
         }
 
         // Is device count exceeded
         if (license.getDevicesCount() <= deviceLicenseService.getDeviceLicensesByLicense(license).size()) {
-            throw new IllegalArgumentException("Could not activate license: device count exceeded");
+            throw new IllegalArgumentException("Device count exceeded");
         }
     }
 

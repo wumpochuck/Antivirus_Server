@@ -11,7 +11,6 @@ public class ProductRequest {
     @NotBlank(message = "Name cannot be empty")
     private String name;
 
-
     private boolean isBlocked;
 
 }

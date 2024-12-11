@@ -36,7 +36,7 @@ public class LicenseInfoController {
         this.userService = userService;
     }
 
-    @GetMapping("/info")
+    @PostMapping("/info")
     public ResponseEntity<?> getLicenseInfo(@Valid @RequestBody LicenseInfoRequest licenseInfoRequest, BindingResult bindingResult){
         if (bindingResult.hasErrors()) {
             String msg = Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage();

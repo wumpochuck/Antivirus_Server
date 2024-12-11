@@ -50,15 +50,13 @@ public class LicenseInfoController {
             // Looking for the device
             Device device = deviceService.getDeviceByInfo(licenseInfoRequest.getMacAddress(), user);
 
-            if(!Objects.equals(device.getUser().getId(), user.getId())){
-                throw new IllegalArgumentException("Validation error: Device not found");
-            }
-
             if(device == null){
-                throw new IllegalArgumentException("Validation error: Device not found");
+                throw new IllegalArgumentException("Device not found");
             }
 
-
+            if(!Objects.equals(device.getUser().getId(), user.getId())){
+                throw new IllegalArgumentException("Device not found");
+            }
 
             // Getting license using mac address and code
             License activeLicense = licenseService.getActiveLicenseForDevice(device, user, licenseInfoRequest.getLicenseCode()); // TODO: 2 изменена логика внутри метода

@@ -105,7 +105,7 @@ public class LicenseService{
 
         if(license.getUser() != null){
             if(license.getUser().getId().equals(user.getId())){
-                throw new IllegalArgumentException("Wrong user");
+                throw new IllegalArgumentException("License already activated");
             }
         }
 

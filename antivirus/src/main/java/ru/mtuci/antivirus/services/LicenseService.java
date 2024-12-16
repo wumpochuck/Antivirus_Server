@@ -130,7 +130,8 @@ public class LicenseService{
     }
 
     /// License finding for the device
-    public License getActiveLicenseForDevice(Device device, User user, String code) {
+    public License getActiveLicenseForDevice(Device device, User user/*, String code*/) {
+        /*
         License license = licenseRepository.getLicensesByCode(code);
 
         if(license == null){
@@ -138,16 +139,26 @@ public class LicenseService{
         }
 
         DeviceLicense deviceLicense = deviceLicenseService.getDeviceLicenseByDeviceIdAndLicenseId(device.getId(), license.getId());
+        */
+
+        DeviceLicense deviceLicense = deviceLicenseService.getDeviceLicenseByDevice(device);
 
         if(deviceLicense == null){
             throw new IllegalArgumentException("License for this device not found");
         }
-
+        /*
         if (license.getIsBlocked()){
             throw new IllegalArgumentException("License is blocked");
         }
 
         return license;
+        */
+
+        if(deviceLicense.getLicense().getIsBlocked()){
+            throw new IllegalArgumentException("License is blocked");
+        }
+
+        return deviceLicense.getLicense();
     }
 
     /// License updating

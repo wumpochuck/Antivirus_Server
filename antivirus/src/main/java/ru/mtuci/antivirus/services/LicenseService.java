@@ -131,31 +131,16 @@ public class LicenseService{
 
     /// License finding for the device
     public License getActiveLicenseForDevice(Device device, User user/*, String code*/) {
-        /*
-        License license = licenseRepository.getLicensesByCode(code);
-
-        if(license == null){
-            throw new IllegalArgumentException("License not found");
-        }
-
-        DeviceLicense deviceLicense = deviceLicenseService.getDeviceLicenseByDeviceIdAndLicenseId(device.getId(), license.getId());
-        */
-
-        DeviceLicense deviceLicense = deviceLicenseService.getDeviceLicenseByDevice(device);
+        DeviceLicense deviceLicense = deviceLicenseService.getDeviceLicenseByDeviceAndIsNotBlocked(device); // && !isblockedlicense
 
         if(deviceLicense == null){
-            throw new IllegalArgumentException("License for this device not found");
+            throw new IllegalArgumentException("License for this device not found or blocked");
         }
-        /*
-        if (license.getIsBlocked()){
-            throw new IllegalArgumentException("License is blocked");
-        }
-
-        return license;
-        */
-
-        if(deviceLicense.getLicense().getIsBlocked()){
-            throw new IllegalArgumentException("License is blocked");
+        if(deviceLicense.getLicense().getEndingDate().before(new Date())){
+            License license = deviceLicense.getLicense();
+            license.setIsBlocked(true);
+            licenseRepository.save(license);
+            throw new IllegalArgumentException("License expired");
         }
 
         return deviceLicense.getLicense();

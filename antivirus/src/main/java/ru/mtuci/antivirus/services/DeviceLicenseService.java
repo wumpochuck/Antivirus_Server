@@ -32,4 +32,14 @@ public class DeviceLicenseService {
     public DeviceLicense getDeviceLicenseByDevice(Device device) {
         return deviceLicenseRepository.getDeviceLicenseByDevice(device);
     }
+
+    public DeviceLicense getDeviceLicenseByDeviceAndIsNotBlocked(Device device) {
+        List<DeviceLicense> deviceLicenses = deviceLicenseRepository.getDeviceLicensesByDevice(device);
+        for(DeviceLicense deviceLicense : deviceLicenses) {
+            if (!deviceLicense.getLicense().getIsBlocked()) {
+                return deviceLicense;
+            }
+        }
+        return null;
+    }
 }

@@ -15,4 +15,5 @@ public class DeviceRequest {
     private String macAddress;
 
     private Long userId;
+
 }

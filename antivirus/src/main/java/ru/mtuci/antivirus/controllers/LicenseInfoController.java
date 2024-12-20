@@ -35,45 +35,45 @@ public class LicenseInfoController {
         this.licenseService = licenseService;
         this.userService = userService;
     }
-/*
-    @PostMapping("/info")
-    public ResponseEntity<?> getLicenseInfo(@Valid @RequestBody LicenseInfoRequest licenseInfoRequest, BindingResult bindingResult){
-        if (bindingResult.hasErrors()) {
-            String msg = Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage();
-            return ResponseEntity.status(400).body("Validation error: " + msg);
-        }
-
-        try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();     // TODO: 1 убрано здесь
-            User user = userService.findUserByLogin(authentication.getName());
-
-            // Looking for the device
-            Device device = deviceService.getDeviceByInfo(licenseInfoRequest.getMacAddress(), user);
-
-            if(device == null){
-                throw new IllegalArgumentException("Device not found");
+    /*
+        @PostMapping("/info")
+        public ResponseEntity<?> getLicenseInfo(@Valid @RequestBody LicenseInfoRequest licenseInfoRequest, BindingResult bindingResult){
+            if (bindingResult.hasErrors()) {
+                String msg = Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage();
+                return ResponseEntity.status(400).body("Validation error: " + msg);
             }
 
-            if(!Objects.equals(device.getUser().getId(), user.getId())){
-                throw new IllegalArgumentException("Device not found");
+            try {
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();     // TODO: 1 убрано здесь
+                User user = userService.findUserByLogin(authentication.getName());
+
+                // Looking for the device
+                Device device = deviceService.getDeviceByInfo(licenseInfoRequest.getMacAddress(), user);
+
+                if(device == null){
+                    throw new IllegalArgumentException("Device not found");
+                }
+
+                if(!Objects.equals(device.getUser().getId(), user.getId())){
+                    throw new IllegalArgumentException("Device not found");
+                }
+
+                // Getting license using mac address and code
+                License activeLicense = licenseService.getActiveLicenseForDevice(device, user, licenseInfoRequest.getLicenseCode()); // TODO: 2 изменена логика внутри метода
+
+                // Generating ticket
+                Ticket ticket = licenseService.generateTicket(activeLicense, device);
+
+                return ResponseEntity.status(200).body("Licenses found. " + ticket.toString());
+
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.status(400).body("Validation error: " + e.getMessage());
             }
-
-            // Getting license using mac address and code
-            License activeLicense = licenseService.getActiveLicenseForDevice(device, user, licenseInfoRequest.getLicenseCode()); // TODO: 2 изменена логика внутри метода
-
-            // Generating ticket
-            Ticket ticket = licenseService.generateTicket(activeLicense, device);
-
-            return ResponseEntity.status(200).body("Licenses found. " + ticket.toString());
-
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(400).body("Validation error: " + e.getMessage());
+            catch (Exception e){
+                return ResponseEntity.status(500).body("Internal server error: " + e.getMessage());
+            }
         }
-        catch (Exception e){
-            return ResponseEntity.status(500).body("Internal server error: " + e.getMessage());
-        }
-    }
-*/
+    */
     @GetMapping("/info")
     public ResponseEntity<?> getLicenseInfo(@Valid @RequestParam String macAddress){
         try {

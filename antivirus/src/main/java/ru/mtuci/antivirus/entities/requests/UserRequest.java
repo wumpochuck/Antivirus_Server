@@ -11,13 +11,21 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserRequest {
-
     @NotBlank(message = "Login cannot be empty")
     private String login;
 
-    @NotBlank(message = "Password cannot be empty")
+    @NotBlank(message = "passwordHash cannot be empty")
     private String passwordHash;
 
     @NotBlank(message = "Email cannot be empty")
     private String email;
+
+    @Override
+    public String toString() {
+        return "UserRequest{" +
+                "login='" + login + '\'' +
+                ", passwordHash='" + passwordHash + '\'' +
+                ", email='" + email + '\'' +
+                '}';
+    }
 }

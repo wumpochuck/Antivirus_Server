@@ -58,14 +58,14 @@ public class Ticket {
 
     public String getBodyForSigning(){
         return String.format("Ticket:" +
-                "Current date: %s" +
-                "Lifetime: %d" +
-                "Activation date: %s" +
-                "Expiration date: %s" +
-                "User ID: %d" +
-                "Device ID: %d" +
-                "Is blocked: %b" +
-                "My mega secret string for signing XD",
+                        "Current date: %s" +
+                        "Lifetime: %d" +
+                        "Activation date: %s" +
+                        "Expiration date: %s" +
+                        "User ID: %d" +
+                        "Device ID: %d" +
+                        "Is blocked: %b" +
+                        "My mega secret string for signing XD",
                 this.getCurrentDate(),
                 this.getLifetime(),
                 this.getActivationDate(),

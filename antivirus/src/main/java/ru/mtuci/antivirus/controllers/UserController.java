@@ -43,7 +43,9 @@ public class UserController {
             String findUsername = userDetails.getUsername();
             User currentUser = userService.findUserByLogin(findUsername);
 
-            if (user.getLogin() != null && !user.getLogin().equals(currentUser.getLogin())) {
+            System.out.println("User request: " + user.toString());
+
+            if (user.getLogin() != null && !user.getLogin().isEmpty() && !user.getLogin().equals(currentUser.getLogin())) {
                 if (userService.existsByLogin(user.getLogin())) {
                     return ResponseEntity.status(400).body("Validation error: login already exists");
                 }
@@ -51,25 +53,23 @@ public class UserController {
                 currentUser.setLogin(user.getLogin());
             }
 
-            if (user.getEmail() != null && !user.getEmail().equals(currentUser.getEmail())) {
+            if (user.getEmail() != null && !user.getEmail().isEmpty() &&!user.getEmail().equals(currentUser.getEmail())) {
                 if (userService.existsByEmail(user.getEmail())) {
                     return ResponseEntity.status(400).body("Validation error: email already exists");
                 }
                 currentUser.setEmail(user.getEmail());
             }
 
-            if (user.getPasswordHash() != null) {
+            if (user.getPasswordHash() != null && !user.getPasswordHash().isEmpty()) {
                 currentUser.setPasswordHash(passwordEncoder.encode(user.getPasswordHash()));
             }
 
             userService.saveUser(currentUser);
 
-            return ResponseEntity.status(200).body("User " + currentUser.getLogin() + " updated");
+            return ResponseEntity.status(200).body("User updated");
 
-        } catch (IllegalArgumentException e){
-            return ResponseEntity.status(400).body("Validation error: " + e.getMessage());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(500).body("Internal server error: " + e.getMessage());
         }
     }

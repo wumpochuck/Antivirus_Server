@@ -17,6 +17,5 @@ public class LicenseTypeRequest {
 
     @NotBlank(message = "Description cannot be empty")
     private String description;
-
-
 }
+

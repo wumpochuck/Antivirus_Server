@@ -31,6 +31,11 @@ public class AuthController {
         this.jwtUtil = jwtUtil;
     }
 
+    @GetMapping("/test")
+    public ResponseEntity<String> test() {
+        return ResponseEntity.ok("Test endpoint is working");
+    }
+
     @PostMapping("/register")
     public ResponseEntity<?> userRegistration(@Valid @RequestBody UserRegisterDTO userDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {

@@ -5,13 +5,15 @@ import org.springframework.stereotype.Repository;
 import ru.mtuci.antivirus.entities.User;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    User findUserByLogin(String login);
+    Optional<User> findUserByLogin(String login);
     User getUserById(Long id);
-    User findUserByEmail(String email);
+
     boolean existsByLogin(String login);
     boolean existsByEmail(String email);
 
+    Optional<User> findUserByEmail(String email);
 }

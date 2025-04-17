@@ -4,55 +4,80 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import ru.mtuci.antivirus.entities.User;
 import ru.mtuci.antivirus.services.UserService;
+import ru.mtuci.antivirus.services.UserSessionService;
 
 import java.io.IOException;
+import java.util.Collections;
 
 @Component
+@RequiredArgsConstructor
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private final UserService userService;
-
-    public JwtRequestFilter(JwtUtil jwtUtil, UserService userService) {
-        this.jwtUtil = jwtUtil;
-        this.userService = userService;
-    }
+    private final UserSessionService userSessionService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         try{
-            String token = resolveToken(request);
+            String token = jwtUtil.resolveToken(request);
 
-            if(token != null && jwtUtil.validateToken(token)){ /// If token is valid
-                String username = jwtUtil.extractLogin(token);
+            // Истек ли токен
+            if(!jwtUtil.validateExpirationToken(token)){
+                System.out.println("Токен истек, генерируем новый");
+                String newAccess = userSessionService.refreshAccessToken(token).getAccessToken(); // Обновляем токен в сессии и возвращаем обновленный
 
-                if(username != null && SecurityContextHolder.getContext().getAuthentication() == null){
-                    UserDetails userDetails = userService.findUserByLogin(username);
-                    // System.out.println("JwtRequestFilter: doFilterInternal: Someone entered filter, login: " + userDetails.getUsername());
-                    SecurityContextHolder.getContext().setAuthentication(jwtUtil.getAuthentication(token, userDetails));
+                // Если при обновлении не вылетали исключения и новый access токен не пустой
+                if (newAccess != null) {
+                    System.out.println("Токен был успешно обновлен");
+                    token = newAccess;
+
+                    // Для удобства положим новый токен в заголовок ответа, чтобы не делать эндпоинт для получения нового токена
+                    response.setHeader("Authorization", "Bearer " + token);
+                } else {
+                    // Если что-то не получилось, завершаем запрос с ошибкий
+                    System.out.println("Токен обновить не удалось");
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Токен истек и не может быть обновлен");
+                    return;
                 }
             }
+
+            // Если токен не истек и текущая сессия активна, то валидируем его и добавляем пользователя в КБ
+            if(jwtUtil.validateToken(token) && userSessionService.isSessionActive(token)){
+                String username = jwtUtil.extractUsername(token);
+                String role = jwtUtil.extractRole(token);
+
+                if(username != null && SecurityContextHolder.getContext().getAuthentication() == null){
+                    UserDetails userDetails = new User(
+                            username,
+                            "", // Нет надобности класть пароль пользователя в КБ
+                            Collections.singleton(new SimpleGrantedAuthority(role))
+                    );
+
+                    UsernamePasswordAuthenticationToken authenticationToken =
+                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                    System.out.println("Пользователь в фильтре: " + username + ", роль: " + role);
+                }
+            } else {
+                System.out.println("Токен не прошел валидацию");
+            }
+
         } catch (Exception e){
-            System.err.println("JWT Filter error: " + e.getMessage());
+            System.out.println("Ошибка в фильтре: " + e.getMessage());
         }
 
         filterChain.doFilter(request, response);
-        // System.out.println("JwtRequestFilter: doFilterInternal: Someone passed filter");
-    }
-
-    // Resolve token used in the request to cut off the "Bearer " part
-    private String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-        return null;
     }
 }

@@ -5,10 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,10 +14,12 @@ import ru.mtuci.antivirus.entities.ENUMS.ROLE;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "users")
@@ -37,8 +36,8 @@ public class User implements UserDetails {
     private String login;
 
     @NotBlank(message = "Пароль не может быть пустым")
-    @Column(name = "password_hash")
-    private String passwordHash;
+    @Column(name = "password")
+    private String password;
 
     @Column(name = "email")
     private String email;
@@ -46,6 +45,9 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private ROLE role;
+
+    @Column(name = "is_blocked")
+    private Boolean isBlocked;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
@@ -60,18 +62,21 @@ public class User implements UserDetails {
     @JsonManagedReference
     private List<LicenseHistory> licenseHistories;
 
-    public User(Long id, String login, String passwordHash, String email, ROLE role, List<License> licenses) {
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserSession> sessions;
+
+    public User(Long id, String login, String password, String email, ROLE role, List<License> licenses) {
         this.id = id;
         this.login = login;
-        this.passwordHash = passwordHash;
+        this.password = password;
         this.email = email;
         this.role = role;
         this.licenses = licenses;
     }
 
-    public User(String login, String passwordHash, String email, ROLE role, List<License> licenses, List<Device> devices, List<LicenseHistory> licenseHistories) {
+    public User(String login, String password, String email, ROLE role, List<License> licenses, List<Device> devices, List<LicenseHistory> licenseHistories) {
         this.login = login;
-        this.passwordHash = passwordHash;
+        this.password = password;
         this.email = email;
         this.role = role;
         this.licenses = licenses;
@@ -79,12 +84,18 @@ public class User implements UserDetails {
         this.licenseHistories = licenseHistories;
     }
 
-    public User(String login, String passwordHash, String email, ROLE role, List<License> licenses) {
+    public User(String login, String password, String email, ROLE role, List<License> licenses) {
         this.login = login;
-        this.passwordHash = passwordHash;
+        this.password = password;
         this.email = email;
         this.role = role;
         this.licenses = licenses;
+    }
+
+    public <T> User(String username, String s, Set<T> singleton) {
+        this.login = username;
+        this.password = s;
+        this.role = ROLE.valueOf(singleton.iterator().next().toString());
     }
 
     @Override
@@ -94,7 +105,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked();
+        return isBlocked;
     }
 
     @Override
@@ -114,7 +125,7 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        return passwordHash;
+        return password;
     }
 
     @Override

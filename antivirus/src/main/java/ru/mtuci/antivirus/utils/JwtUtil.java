@@ -1,14 +1,17 @@
 package ru.mtuci.antivirus.utils;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
+import ru.mtuci.antivirus.entities.User;
 
 import java.security.Key;
 import java.util.*;
@@ -21,17 +24,38 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String secretKey;
 
-    @Value("${jwt.expiration}")
-    private Long expiration;
+    @Value("${jwt.access-jwt.expiration}")
+    private long accessTokenExpiration;
 
-    /// Hashing secret key
+    @Value("${jwt.refresh-jwt.expiration}")
+    private long refreshTokenExpiration;
+
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
-    /// Generate token
+    ///  Генерация access
+    public String generateAccessToken(User user){
+        Map<String, Object> claims = new HashMap<>();
 
-    public String createToken(Map<String, Object> claims, String subject) {
+        claims.put("role", user.getRole().name());
+        claims.put("token_type", "access");
+
+        return createToken(claims, user.getUsername(), accessTokenExpiration);
+    }
+
+    /// Генерация refresh
+    public String generateRefreshToken(User user){
+        Map<String, Object> claims = new HashMap<>();
+
+        claims.put("role", user.getRole().name());
+        claims.put("token_type", "refresh");
+
+        return createToken(claims, user.getUsername(), refreshTokenExpiration);
+    }
+
+    ///  Создание токена
+    private String createToken(Map<String, Object> claims, String subject, long expiration){
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)
@@ -41,42 +65,33 @@ public class JwtUtil {
                 .compact();
     }
 
-    public String generateToken(UserDetails userDetails) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("role", userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList())
-        );
-        /*
-        claims.put("role", ...) добавляет запись в claims с ключом "role".
-        userDetails.getAuthorities() получает коллекцию полномочий (ролей), предоставленных пользователю.
-        .stream() преобразует коллекцию полномочий в поток.
-        .map(GrantedAuthority::getAuthority) преобразует каждый объект GrantedAuthority в потоке в его строковое представление (имя полномочия/роли).
-        .collect(Collectors.toList()) собирает преобразованные элементы потока в список.
-         */
-        return createToken(claims, userDetails.getUsername());
-
-    }
-
-    /// Validate token
-
-    private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
-    }
-
-    public boolean validateToken(String token) {
+    /// Валидация истечения
+    public boolean validateExpirationToken(String token) {
         try {
             Jwts.parserBuilder()
                     .setSigningKey(getSigningKey())
                     .build()
                     .parseClaimsJws(token);
+
             return true;
-        } catch (Exception e) {
+        } catch (ExpiredJwtException e){
             return false;
         }
     }
 
-    /// Extract from token
+    /// Общая валидация (реагируем на любое исключение)
+    public boolean validateToken(String token) {
+        try{
+            Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token);
+
+            return true;
+        } catch (Exception e){
+            return false;
+        }
+    }
 
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
@@ -91,14 +106,6 @@ public class JwtUtil {
         return claimsResolver.apply(claims);
     }
 
-    public String extractLogin(String token) {
-        return extractClaim(token, Claims::getSubject);
-    }
-
-    public Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
-    }
-
     public Set<GrantedAuthority> extractAuthorities(String token) {
         List<?> roles = extractClaim(token, claims -> claims.get("role", List.class));
         return roles.stream()
@@ -109,5 +116,32 @@ public class JwtUtil {
     public UsernamePasswordAuthenticationToken getAuthentication(String token, UserDetails userDetails) {
         Set<GrantedAuthority> authorities = extractAuthorities(token);
         return new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
+    }
+
+    /// Отсечь Bearer_ от запроса
+    public String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
+    }
+
+    /// Отсечь Bearer_ от строки (перегрузка)
+    public String resolveToken(String bearerToken){
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
+    }
+
+    /// Извлечение username пользователя
+    public String extractUsername(String token){
+        return extractClaim(token, Claims::getSubject);
+    }
+
+    /// Извлечение роли пользователя
+    public String extractRole(String token) {
+        return extractClaim(token, claims -> claims.get("role", String.class));
     }
 }

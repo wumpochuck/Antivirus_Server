@@ -18,7 +18,7 @@ public class AuthenticationService {
     }
 
     public boolean authenticate(String login, String password) {
-        User user = userRepository.findUserByLogin(login);
+        User user = userRepository.findUserByLogin(login).orElseThrow(() -> new RuntimeException("User not found"));
         if(user != null){
             return passwordEncoder.matches(password, user.getPassword());
         }

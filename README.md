@@ -1,33 +1,54 @@
-<h1 align=center>🛡️ Java Antivirus Server 🛡️</h1>
+<h1 align=center>Java Antivirus Server</h1>
 
-<p>Добро пожаловать в серверную часть будущего антивируса, разработанного с использованием Java Spring! 🚀</p>
+## Server Side of Antivirus
 
-<h2 align=center>📋 Описание проекта</h2>
-<p>Этот проект в будущем станет серверной частью антивирусного программного обеспечения, написанного на Java & C++ с использованием фреймворка Spring. Основные функции включают:</p>
-<ul>
-    <li>Coming soon.. 🦠</li>
-    <li>Coming soon.. 📅</li>
-    <li>Coming soon.. 📊</li>
-</ul>
+[Task](./TASK.md) completed as part of the educational project for the course "Information Security from Malware".
 
-<h2 align=center>🔧 Установка и запуск</h2>
-<p>Для запуска проекта в Visual Studio Code с использованием Java Extension Pack, выполните следующие шаги:</p>
-<ol>
-    <li>Установите <a href="https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-pack">Java Extension Pack</a> для Visual Studio Code.</li>
-    <li>Скачайте репозиторий проекта:</li>
-    <li>Скачайте <a href="https://github.com/wumpochuck/Java_Antivirus/archive/refs/heads/main.zip">репозиторий проекта</a></li>
-    <li>Откройте проект в Visual Studio Code:</li>
-    <pre><code>code /Users/wumpochuck/Github/Java_Antivirus</code></pre>
-    <li>Запустите проект с помощью встроенного терминала или конфигурации запуска.</li>
-</ol>
+[Задание](./TASK.md) выполнено в рамках учебного проекта по дисциплине "Защита информации от вредоносного ПО".
 
-<h2 align=center>📚 Документация</h2>
-<p>Coming soon...</p>
+## Description
+[**EN**] | Server side of antivirus is a Java application that provides a REST API for scanning files for viruses and managing user licenses. The server uses Spring Boot framework and MySQL database to store user information and their licenses.
 
-<h2 align=center>🤝 Вклад</h2>
-<p>Чтобы внести вклад в проект, создавайте pull requests и сообщайте об ошибках через <a href="https://github.com/yourusername/Java_Antivirus/issues">issues</a>.</p>
+[**RU**] | Серверная часть антивируса написана на Java с использованием Spring Boot. Она предоставляет REST API для взаимодействия с клиентами и обработки файлов. Используемая база данных - MySQL. Обеспечивает хранение информации о пользователях и их лицензиях.
 
-<h2 align=center>📞 Контакты</h2>
+## Project Structure
+
+- `antivirus`
+  - `src`
+    - `main`
+      - `java/ru.mtuci.antivirus`
+        - `configs` - Конфигурация Spring Security
+        - `controllers` - REST контроллеры
+        - `entities` - Сущности базы данных
+        - `repositories` - Репозитории для работы с базой данных
+        - `services` - Сервисы для обработки логики приложения
+        - `utils` - Access\Refresh логика
+    - `resources`
+      - `application.properties` - Конфигурация приложения
+      - `static`
+        - `sqlPayloads` - SQL скрипты для создания базы данных
+
+## Getting Started
+1. Убедитесь, что у вас установлен Java 17 и MySQL.
+2. Скачайте проект с GitHub.
+3. Создайте базу данных MySQL с именем `antivirus`.
+4. Откройте IntelliJ IDEA и импортируйте проект.
+5. Настройте файл `application.properties` с вашими данными для подключения к базе данных.
+6. Запустите приложение через IDE 
+7. Готово! Серверная часть антивируса запущена и готова к работе.
+
+## Technologies
+- Java 17
+- Spring Boot
+- Spring Security
+- Spring Data JPA
+- MySQL
+- Lombok
+- Maven
+- Postman
+- Dbeaver
+
+## Contributors
 
 <table>
     <tbody>
@@ -37,7 +58,7 @@
             </td>
             <td>
                 <a href = "t.me/wumpochuck"><b>wumpochuck</b></a>
-                <br>По всем вопросам
+                <br>
             </td>
         </tr>
     </tbody>

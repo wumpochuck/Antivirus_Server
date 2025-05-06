@@ -1,35 +1,31 @@
 package ru.mtuci.antivirus.controllers;
 
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ru.mtuci.antivirus.entities.requests.LicenseTypeRequest;
 import ru.mtuci.antivirus.entities.LicenseType;
+import ru.mtuci.antivirus.entities.requests.LicenseTypeRequest;
 import ru.mtuci.antivirus.services.LicenseTypeService;
 
 import java.util.List;
 import java.util.Objects;
 
+@PreAuthorize("hasRole('ROLE_ADMIN')")
 @RestController
 @RequestMapping("/license-types")
-@PreAuthorize("hasRole('ADMIN')")
+@RequiredArgsConstructor
 public class LicenseTypeController {
 
     private final LicenseTypeService licenseTypeService;
 
-    @Autowired
-    public LicenseTypeController(LicenseTypeService licenseTypeService) {
-        this.licenseTypeService = licenseTypeService;
-    }
-
     @PostMapping
-    public ResponseEntity<?> createLicenseType(@Valid @RequestBody LicenseTypeRequest licenseTypeRequest, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            String msg = Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage();
-            return ResponseEntity.status(400).body("Validation error: " + msg);
+    public ResponseEntity<?> createLicenseType(@Valid @RequestBody LicenseTypeRequest licenseTypeRequest, BindingResult bindingResult){
+        if(bindingResult.hasErrors()){
+            String errMsg = Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage();
+            return ResponseEntity.status(200).body("Validation error: " + errMsg);
         }
 
         LicenseType licenseType = licenseTypeService.createLicenseType(licenseTypeRequest);
@@ -37,16 +33,15 @@ public class LicenseTypeController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getLicenseType(@PathVariable Long id) {
-        LicenseType licenseType = licenseTypeService.getLicenseTypeById(id);
-        return ResponseEntity.status(200).body(licenseType.toString());
+    public ResponseEntity<?> getLicenseTypeById(@PathVariable Long id){
+        return ResponseEntity.status(200).body(licenseTypeService.getLicenseTypeById(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateLicenseType(@PathVariable Long id, @Valid @RequestBody LicenseTypeRequest licenseTypeRequest, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            String msg = Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage();
-            return ResponseEntity.status(400).body("Validation error: " + msg);
+    public ResponseEntity<?> updateLicenseType(@PathVariable Long id, @Valid @RequestBody LicenseTypeRequest licenseTypeRequest, BindingResult bindingResult){
+        if(bindingResult.hasErrors()){
+            String errMsg = Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage();
+            return ResponseEntity.status(200).body("Validation error: " + errMsg);
         }
 
         LicenseType licenseType = licenseTypeService.updateLicenseType(id, licenseTypeRequest);
@@ -54,14 +49,13 @@ public class LicenseTypeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteLicenseType(@PathVariable Long id) {
+    public ResponseEntity<String> deleteLicenseTypeById(@PathVariable Long id){
         licenseTypeService.deleteLicenseType(id);
-        return ResponseEntity.status(200).body("License type with id " + id + " was deleted");
+        return ResponseEntity.status(200).body("License type with id: " + id + " deleted");
     }
 
     @GetMapping
-    public ResponseEntity<List<LicenseType>> getAllLicenseTypes() {
-        List<LicenseType> licenseTypes = licenseTypeService.getAllLicenseTypes();
-        return ResponseEntity.status(200).body(licenseTypes);
+    public ResponseEntity<List<LicenseType>> getAllLicenseTypes(){
+        return ResponseEntity.status(200).body(licenseTypeService.getAllLicenseTypes());
     }
 }

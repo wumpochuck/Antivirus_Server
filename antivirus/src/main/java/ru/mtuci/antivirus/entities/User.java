@@ -14,14 +14,13 @@ import ru.mtuci.antivirus.entities.ENUMS.ROLE;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Getter
 @Setter
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Table(name = "users")
 @JsonIgnoreProperties({"licenses", "devices"})
 public class User implements UserDetails {
@@ -65,18 +64,12 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserSession> sessions;
 
-    public User(Long id, String login, String password, String email, ROLE role, List<License> licenses) {
-        this.id = id;
-        this.login = login;
-        this.password = password;
-        this.email = email;
-        this.role = role;
-        this.licenses = licenses;
-    }
+    @OneToMany(mappedBy = "changedBy", cascade = CascadeType.ALL)
+    private List<SignatureAudit> signatureAudits;
 
-    public User(String login, String password, String email, ROLE role, List<License> licenses, List<Device> devices, List<LicenseHistory> licenseHistories) {
+    public User(String login, String passwordHash, String email, ROLE role, List<License> licenses, List<Device> devices, List<LicenseHistory> licenseHistories) {
         this.login = login;
-        this.password = password;
+        this.password = passwordHash;
         this.email = email;
         this.role = role;
         this.licenses = licenses;
@@ -84,18 +77,27 @@ public class User implements UserDetails {
         this.licenseHistories = licenseHistories;
     }
 
-    public User(String login, String password, String email, ROLE role, List<License> licenses) {
+    public User(String login, String passwordHash, String email, ROLE role, List<License> licenses, List<Device> devices) {
         this.login = login;
-        this.password = password;
+        this.password = passwordHash;
+        this.email = email;
+        this.role = role;
+        this.licenses = licenses;
+        this.devices = devices;
+    }
+
+    public User(String login, String passwordHash, String email, ROLE role, List<License> licenses) {
+        this.login = login;
+        this.password = passwordHash;
         this.email = email;
         this.role = role;
         this.licenses = licenses;
     }
 
-    public <T> User(String username, String s, Set<T> singleton) {
-        this.login = username;
-        this.password = s;
-        this.role = ROLE.valueOf(singleton.iterator().next().toString());
+    public User(String login, String passwordHash, String email) {
+        this.login = login;
+        this.password = passwordHash;
+        this.email = email;
     }
 
     @Override
@@ -105,7 +107,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return isBlocked;
+        return isBlocked; // Аккаунт не заблокирован, если isBlocked == false
     }
 
     @Override

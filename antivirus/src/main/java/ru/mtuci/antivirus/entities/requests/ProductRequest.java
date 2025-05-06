@@ -1,16 +1,13 @@
 package ru.mtuci.antivirus.entities.requests;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class ProductRequest {
 
-    @NotBlank(message = "Name cannot be empty")
+    @NotBlank(message = "Название продукта не может быть пустым")
     private String name;
 
     private boolean isBlocked;
-
 }

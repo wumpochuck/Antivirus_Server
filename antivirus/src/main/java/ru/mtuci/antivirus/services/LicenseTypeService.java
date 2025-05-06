@@ -1,28 +1,22 @@
 package ru.mtuci.antivirus.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.mtuci.antivirus.entities.requests.LicenseTypeRequest;
 import ru.mtuci.antivirus.entities.LicenseType;
+import ru.mtuci.antivirus.entities.requests.LicenseTypeRequest;
 import ru.mtuci.antivirus.repositories.LicenseTypeRepository;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class LicenseTypeService {
 
     private final LicenseTypeRepository licenseTypeRepository;
 
-    @Autowired
-    public LicenseTypeService(LicenseTypeRepository licenseTypeRepository) {
-        this.licenseTypeRepository = licenseTypeRepository;
-    }
-
     public LicenseType getLicenseTypeById(Long licenseTypeId) {
         return licenseTypeRepository.getLicenseTypeById(licenseTypeId);
     }
-
-    /// CRUD operations
 
     public LicenseType createLicenseType(LicenseTypeRequest licenseTypeRequest) {
         LicenseType licenseType = new LicenseType();

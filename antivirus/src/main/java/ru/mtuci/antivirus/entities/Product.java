@@ -4,14 +4,16 @@ package ru.mtuci.antivirus.entities;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Entity
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "products")
 @JsonIgnoreProperties({"licenses"})
 public class Product {
@@ -31,13 +33,25 @@ public class Product {
     @JsonManagedReference
     private List<License> licenses;
 
-    public Product(String name, boolean isBlocked, List<License> licenses) {
-        this.name = name;
-        this.isBlocked = isBlocked;
-        this.licenses = licenses;
+    public String getBody(){
+        return String.format(
+                "Product:\n"
+                        + "id: %d\n"
+                        + "name: %s\n"
+                        + "isBlocked: %b\n"
+                        + "licenses: %s\n",
+                id, name, isBlocked, licenses
+        );
     }
 
-    public Product() {
-
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", isBlocked=" + isBlocked +
+                '}';
     }
+
+
 }

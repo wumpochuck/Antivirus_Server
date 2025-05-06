@@ -1,5 +1,6 @@
 package ru.mtuci.antivirus.controllers;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -11,37 +12,32 @@ import java.util.List;
 @PreAuthorize("hasRole('ROLE_ADMIN')")
 @RestController
 @RequestMapping("/license-history")
+@RequiredArgsConstructor
 public class LicenseHistoryController {
 
     private final LicenseHistoryService licenseHistoryService;
 
-    public LicenseHistoryController(LicenseHistoryService licenseHistoryService) {
-        this.licenseHistoryService = licenseHistoryService;
-    }
-
     @GetMapping
-    public ResponseEntity<List<LicenseHistory>> getAllLicenseHistories() {
-        List<LicenseHistory> licenseHistories = licenseHistoryService.getAllLicenseHistories();
-        return ResponseEntity.status(200).body(licenseHistories);
+    public ResponseEntity<List<LicenseHistory>> getAll() {
+        return ResponseEntity.status(200).body(licenseHistoryService.getAllLicenseHistories());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getLicenseHistoryById(@PathVariable Long id) {
-        try {
-            LicenseHistory licenseHistory = licenseHistoryService.getLicenseHistoryById(id);
-            return ResponseEntity.status(200).body(licenseHistory.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(404).body("User with id " + id + " not found");
+        try{
+            return ResponseEntity.status(200).body(licenseHistoryService.getLicenseHistoryById(id));
+        } catch (Exception e){
+            return ResponseEntity.status(404).body("History with id: " + id + " not found.");
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteLicenseHistoryById(@PathVariable Long id) {
-        try {
+    public ResponseEntity<String> deleteLicenseHistoryById(@PathVariable Long id){
+        try{
             licenseHistoryService.deleteLicenseHistoryById(id);
-            return ResponseEntity.status(200).body("User with id " + id + " deleted");
-        } catch (Exception e) {
-            return ResponseEntity.status(404).body("User with id " + id + " not found");
+            return ResponseEntity.status(200).body("History with id: " + id + " deleted");
+        } catch (Exception e){
+            return ResponseEntity.status(404).body("History with id: " + id + " not found.");
         }
     }
 }

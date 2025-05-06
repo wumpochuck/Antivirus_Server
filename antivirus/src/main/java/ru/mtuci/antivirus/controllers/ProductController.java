@@ -1,67 +1,56 @@
 package ru.mtuci.antivirus.controllers;
 
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ru.mtuci.antivirus.entities.requests.ProductRequest;
 import ru.mtuci.antivirus.entities.Product;
+import ru.mtuci.antivirus.entities.requests.ProductRequest;
 import ru.mtuci.antivirus.services.ProductService;
 
 import java.util.List;
 import java.util.Objects;
 
+@PreAuthorize("hasRole('ROLE_ADMIN')")
 @RestController
 @RequestMapping("/products")
-@PreAuthorize("hasRole('ADMIN')")
+@RequiredArgsConstructor
 public class ProductController {
 
     private final ProductService productService;
 
-    @Autowired
-    public ProductController(ProductService productService) {
-        this.productService = productService;
-    }
-
     @PostMapping
-    public ResponseEntity<?> createProduct(@Valid @RequestBody ProductRequest productRequest, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            String msg = Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage();
-            return ResponseEntity.status(400).body("Validation error: " + msg);
+    public ResponseEntity<?> createProduct(@Valid @RequestBody ProductRequest productRequest, BindingResult bindingResult){
+        if(bindingResult.hasErrors()){
+            String errMsg = Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage();
+            return ResponseEntity.status(200).body("Validation error: " + errMsg);
         }
 
         Product product = productService.createProduct(productRequest);
-        return ResponseEntity.status(200).body(product.toString());
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getProduct(@PathVariable Long id) {
-        Product product = productService.getProductById(id);
-        return ResponseEntity.status(200).body(product.toString());
+        return ResponseEntity.status(200).body(product.getBody());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductRequest productRequest, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            String msg = Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage();
-            return ResponseEntity.status(400).body("Validation error: " + msg);
+    public ResponseEntity<?> update(@PathVariable Long id, @Valid @RequestBody ProductRequest productRequest, BindingResult bindingResult) {
+        if(bindingResult.hasErrors()){
+            String errMsg = Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage();
+            return ResponseEntity.status(200).body("Validation error: " + errMsg);
         }
 
         Product product = productService.updateProduct(id, productRequest);
-        return ResponseEntity.status(200).body(product.toString());
+        return ResponseEntity.ok(product.getBody());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteProduct(@PathVariable Long id) {
+    public ResponseEntity<String> delete(@PathVariable Long id){
         productService.deleteProduct(id);
-        return ResponseEntity.status(200).body("Product with id " + id + " deleted");
+        return ResponseEntity.status(200).body("Product with id: " + id + " successfully deleted");
     }
 
     @GetMapping
-    public ResponseEntity<List<Product>> getAllProducts() {
-        List<Product> products = productService.getAllProducts();
-        return ResponseEntity.status(200).body(products);
+    public ResponseEntity<List<Product>> getAll(){
+        return ResponseEntity.status(200).body(productService.getAllProducts());
     }
 }

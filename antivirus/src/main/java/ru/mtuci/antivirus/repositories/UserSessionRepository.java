@@ -2,7 +2,7 @@ package ru.mtuci.antivirus.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import ru.mtuci.antivirus.entities.ENUMS.STATUS;
+import ru.mtuci.antivirus.entities.ENUMS.session.STATUS;
 import ru.mtuci.antivirus.entities.User;
 import ru.mtuci.antivirus.entities.UserSession;
 

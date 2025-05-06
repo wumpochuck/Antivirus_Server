@@ -2,14 +2,16 @@ package ru.mtuci.antivirus.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 @Entity
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "device_licenses")
 public class DeviceLicense {
 
@@ -29,13 +31,4 @@ public class DeviceLicense {
 
     @Column(name = "activation_date")
     private Date activationDate;
-
-    public DeviceLicense(License license, Device device, Date activationDate) {
-        this.license = license;
-        this.device = device;
-        this.activationDate = activationDate;
-    }
-
-    public DeviceLicense() {
-    }
 }

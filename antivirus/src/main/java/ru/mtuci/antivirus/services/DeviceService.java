@@ -1,53 +1,38 @@
 package ru.mtuci.antivirus.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.mtuci.antivirus.entities.requests.ActivationRequest;
-import ru.mtuci.antivirus.entities.requests.DeviceRequest;
 import ru.mtuci.antivirus.entities.Device;
 import ru.mtuci.antivirus.entities.User;
+import ru.mtuci.antivirus.entities.requests.ActivationRequest;
+import ru.mtuci.antivirus.entities.requests.DeviceRequest;
 import ru.mtuci.antivirus.repositories.DeviceRepository;
 import ru.mtuci.antivirus.repositories.UserRepository;
 
 import java.util.List;
 
-//TODO: 1. Пересмотреть логику обновления пользователя устройства ✅
-
 @Service
+@RequiredArgsConstructor
 public class DeviceService {
 
     private final DeviceRepository deviceRepository;
     private final UserRepository userRepository;
 
-    @Autowired
-    public DeviceService(DeviceRepository deviceRepository, UserRepository userRepository) {
-        this.deviceRepository = deviceRepository;
-        this.userRepository = userRepository;
-    }
-
     public Device registerOrUpdateDevice(ActivationRequest activationRequest, User user) {
 
-        // Получение устройства по MAC-адресу
         Device device = deviceRepository.getDeviceByMacAddress(activationRequest.getMacAddress());
         if (device == null) {
             device = new Device();
-            device.setMacAddress(activationRequest.getMacAddress());  // TODO: 1 переделана логика метода
+            device.setMacAddress(activationRequest.getMacAddress());
             device.setUser(user);
         } else if (!device.getUser().equals(user)) {
             throw new IllegalArgumentException("Device already registered by another user");
         }
 
-        // Обновление информации об устройстве
         device.setName(activationRequest.getDeviceName());
 
         return deviceRepository.save(device);
     }
-
-    public Device getDeviceByInfo(String macAddress, User user) {
-        return deviceRepository.findDeviceByMacAddressAndUser(macAddress, user);
-    }
-
-    /// CRUD operations
 
     public Device createDevice(DeviceRequest deviceRequest) {
         User user = userRepository.findById(deviceRequest.getUserId())
@@ -81,4 +66,7 @@ public class DeviceService {
         return deviceRepository.findAll();
     }
 
+    public Device getDeviceByMacAddress(String macAddress) {
+        return deviceRepository.findDeviceByMacAddress(macAddress);
+    }
 }

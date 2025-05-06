@@ -2,12 +2,10 @@ package ru.mtuci.antivirus.entities.requests;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class LicenseRequest {
@@ -18,7 +16,7 @@ public class LicenseRequest {
 
     private Long licenseTypeId;
 
-    @NotBlank(message = "description cannot be empty.")
+    @NotBlank(message = "Описание не может быть пустым")
     private String description;
 
     private Integer deviceCount;

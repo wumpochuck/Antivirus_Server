@@ -1,7 +1,6 @@
 package ru.mtuci.antivirus.services;
 
 import org.springframework.stereotype.Service;
-import ru.mtuci.antivirus.entities.Device;
 import ru.mtuci.antivirus.entities.DeviceLicense;
 import ru.mtuci.antivirus.entities.License;
 import ru.mtuci.antivirus.repositories.DeviceLicenseRepository;
@@ -27,19 +26,5 @@ public class DeviceLicenseService {
 
     public DeviceLicense getDeviceLicenseByDeviceIdAndLicenseId(Long deviceId, Long licenseId) {
         return deviceLicenseRepository.getDeviceLicenseByDeviceIdAndLicenseId(deviceId, licenseId);
-    }
-
-    public DeviceLicense getDeviceLicenseByDevice(Device device) {
-        return deviceLicenseRepository.getDeviceLicenseByDevice(device);
-    }
-
-    public DeviceLicense getDeviceLicenseByDeviceAndIsNotBlocked(Device device) {
-        List<DeviceLicense> deviceLicenses = deviceLicenseRepository.getDeviceLicensesByDevice(device);
-        for(DeviceLicense deviceLicense : deviceLicenses) {
-            if (!deviceLicense.getLicense().getIsBlocked()) {
-                return deviceLicense;
-            }
-        }
-        return null;
     }
 }

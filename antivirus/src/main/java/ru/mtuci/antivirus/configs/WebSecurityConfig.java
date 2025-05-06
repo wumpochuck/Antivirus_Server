@@ -14,9 +14,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import ru.mtuci.antivirus.utils.JwtRequestFilter;
 
-@Configuration // Show, that this class is configuration
-@EnableWebSecurity // Enable Spring Security
-@EnableGlobalMethodSecurity(prePostEnabled = true) // Enable method security for (@PreAuthorize and @PostAuthorize annotations)
+@Configuration
+@EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig {
 
     private final JwtRequestFilter jwtRequestFilter;
@@ -29,7 +29,18 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf().disable()
                 .authorizeHttpRequests( (requests) -> requests
-                        .requestMatchers("/auth/login","/auth/register", "/auth/test").permitAll()
+
+                        .requestMatchers(
+                                "/auth/login",
+                                "/auth/register",
+                                "/auth/greeting")
+                        .permitAll()
+
+                        .requestMatchers(
+                                "/signatures/**",
+                                "/api/signatures/**"
+                        ).hasRole("ADMIN")
+
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

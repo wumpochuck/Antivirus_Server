@@ -1,19 +1,16 @@
 package ru.mtuci.antivirus.entities.requests;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class DeviceRequest {
 
-    @NotBlank(message = "Device name cannot be empty")
+    @NotBlank(message = "Имя устройства не может быть пустым")
     private String deviceName;
 
-    @NotBlank(message = "Mac address cannot be empty")
+    @NotBlank(message = "MAC не может быть пустым")
     private String macAddress;
 
     private Long userId;
-
 }

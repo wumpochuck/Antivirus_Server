@@ -2,14 +2,14 @@ package ru.mtuci.antivirus.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
-import ru.mtuci.antivirus.entities.ENUMS.STATUS;
+import ru.mtuci.antivirus.entities.ENUMS.session.STATUS;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Setter
-@Builder // Чтобы было удобнее создавать экземляр
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserSession {
@@ -43,3 +43,4 @@ public class UserSession {
     @Column(name = "version")
     private Long version;
 }
+

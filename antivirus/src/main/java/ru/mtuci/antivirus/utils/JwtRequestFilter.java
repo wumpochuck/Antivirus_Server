@@ -54,6 +54,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
             // Если токен не истек и текущая сессия активна, то валидируем его и добавляем пользователя в КБ
             if(jwtUtil.validateToken(token) && userSessionService.isSessionActive(token)){
+
                 String username = jwtUtil.extractUsername(token);
                 String role = jwtUtil.extractRole(token);
 

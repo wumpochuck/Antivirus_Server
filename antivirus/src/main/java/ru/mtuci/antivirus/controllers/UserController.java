@@ -38,7 +38,7 @@ public class UserController {
             String findUsername = userDetails.getUsername();
             User currentUser = userService.findUserByLogin(findUsername);
 
-            if (user.getLogin() != null && !user.getLogin().equals(currentUser.getLogin())) {
+            if (user.getLogin() != null && !user.getLogin().equals("null") && !user.getLogin().equals(currentUser.getLogin())) {
                 if (userService.existsByLogin(user.getLogin())) {
                     return ResponseEntity.status(400).body("Validation error: user already exists");
                 }
@@ -46,15 +46,15 @@ public class UserController {
                 currentUser.setLogin(user.getLogin());
             }
 
-            if (user.getEmail() != null && !user.getEmail().equals(currentUser.getEmail())) {
+            if (user.getEmail() != null && !user.getEmail().equals("null") && !user.getEmail().equals(currentUser.getEmail())) {
                 if (userService.existsByEmail(user.getEmail())) {
                     return ResponseEntity.status(400).body("Validation error: email already exists");
                 }
                 currentUser.setEmail(user.getEmail());
             }
 
-            if (user.getPasswordHash() != null) {
-                currentUser.setPassword(passwordEncoder.encode(user.getPasswordHash()));
+            if (user.getPassword() != null && !user.getPassword().equals("null")) {
+                currentUser.setPassword(passwordEncoder.encode(user.getPassword()));
             }
 
             userService.saveUser(currentUser);

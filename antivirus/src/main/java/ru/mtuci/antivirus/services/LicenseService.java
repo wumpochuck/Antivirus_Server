@@ -1,6 +1,7 @@
 package ru.mtuci.antivirus.services;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import ru.mtuci.antivirus.entities.*;
 import ru.mtuci.antivirus.entities.requests.LicenseRequest;
@@ -174,7 +175,7 @@ public class LicenseService{
         return ticket;
     }
 
-    private void validateActivation(License license, Device device, String login) {
+    public void validateActivation(License license, Device device, String login) {
         User user = userService.findUserByLogin(login);
 
         if(license.getUser() != null){ // И теперь спереть лицуху не получится
@@ -207,7 +208,12 @@ public class LicenseService{
         deviceLicense.setLicense(license);
         deviceLicense.setActivationDate(new Date());
 
-        deviceLicenseService.save(deviceLicense);
+        try {
+            deviceLicenseService.save(deviceLicense);
+        }
+        catch (DataIntegrityViolationException e) {
+            // throw new IllegalArgumentException("Это устройство уже связано с лицухой", e);
+        }
     }
 
     private void updateLicenseForActivation(License license, User user) {

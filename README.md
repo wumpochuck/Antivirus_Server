@@ -60,6 +60,20 @@
                 <a href = "t.me/wumpochuck"><b>wumpochuck</b></a>
                 <br>
             </td>
+            <td>
+                <img width=50 src="https://avatars.githubusercontent.com/u/85567113?v=4"/>
+            </td>
+            <td>
+                <a href = "https://github.com/yokkochka"><b>yokkochka</b></a>
+                <br>
+            </td>
+            <td>
+                <img width=50 src="https://avatars.githubusercontent.com/u/153612706?v=4"/>
+            </td>
+            <td>
+                <a href = "https://github.com/Na-Nd"><b>Na-Nd</b></a>
+                <br>
+            </td>
         </tr>
     </tbody>
 </table>

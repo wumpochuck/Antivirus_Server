@@ -24,4 +24,24 @@ public class SessionController {
             return ResponseEntity.status(409).body(e.getMessage());
         }
     }
+
+
+    //
+    @PostMapping("/refresh-update")
+    public ResponseEntity<?> refreshUpdate(@RequestHeader("Authorization") String accessToken) {
+        try {
+            // Извлечение токена из заголовка Authorization
+            if (accessToken != null && accessToken.startsWith("Bearer ")) {
+                accessToken = accessToken.substring(7);
+            } else {
+                throw new RuntimeException("Некорректный заголовок Authorization");
+            }
+
+            // Обновление refresh токена на основе access токена
+            return ResponseEntity.status(200).body(sessionService.refreshRefreshTokenByAccessToken(accessToken));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(409).body(e.getMessage());
+        }
+    }
+
 }

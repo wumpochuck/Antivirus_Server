@@ -105,7 +105,10 @@ public class LicenseService{
         License license = licenseRepository.getLicensesByCode(code);
 
         if(license == null){
-            throw new IllegalArgumentException("License not found");
+            license = licenseRepository.getLicenseByUser(user);
+            if(license == null){
+                throw new IllegalArgumentException("License not found");
+            }
         }
 
         DeviceLicense deviceLicense = deviceLicenseService.getDeviceLicenseByDeviceIdAndLicenseId(device.getId(), license.getId());

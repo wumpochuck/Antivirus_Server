@@ -134,6 +134,32 @@ public class UserSessionService {
         return userSessionRepository.save(session);
     }
 
+    public UserSession refreshRefreshTokenByAccessToken(String accessToken) {
+        // Find the session by the provided access token
+        UserSession session = userSessionRepository.findByAccessToken(accessToken)
+                .orElseThrow(() -> new RuntimeException("Session not found"));
+
+        // Check if the session is active
+        if (session.getStatus() != STATUS.ACTIVE) {
+            throw new RuntimeException("Session is not active");
+        }
+
+        // Check for multiple active sessions
+        List<UserSession> activeSessions = userSessionRepository.findByUserAndStatus(session.getUser(), STATUS.ACTIVE);
+        if (activeSessions.size() > 1) {
+            blockUserSessions(session.getUser());
+            throw new RuntimeException("Multiple active sessions detected. All sessions blocked.");
+        }
+
+        // Refresh the refresh token
+        session.setRefreshToken(jwtUtil.generateRefreshToken(session.getUser()));
+        session.setRefreshTokenExpires(LocalDateTime.now().plus(Duration.ofMillis(refreshTokenExpiration)));
+        session.setLastActivityTime(LocalDateTime.now());
+
+        // Save and return the updated session
+        return userSessionRepository.save(session);
+    }
+
     /// Блокировка активных сессий пользователя
     public void blockUserSessions(User user) {
         List<UserSession> sessions = userSessionRepository.findByUserAndStatus(user, STATUS.ACTIVE);

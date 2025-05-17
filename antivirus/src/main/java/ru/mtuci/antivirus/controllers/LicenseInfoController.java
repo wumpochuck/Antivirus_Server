@@ -6,7 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import ru.mtuci.antivirus.entities.Device;
 import ru.mtuci.antivirus.entities.License;
 import ru.mtuci.antivirus.entities.Ticket;
@@ -27,7 +30,7 @@ public class LicenseInfoController {
     private final LicenseService licenseService;
     private final UserService userService;
 
-    @PostMapping("/info")
+    @GetMapping("/info")
     public ResponseEntity<?> getLicenseInfo(@Valid @RequestBody LicenseInfoRequest licenseInfoRequest, BindingResult bindingResult){
         if(bindingResult.hasErrors()){
             String errMsg = Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage();
@@ -49,8 +52,6 @@ public class LicenseInfoController {
             }
 
             License activeLicense = licenseService.getActiveLicenseForDevice(device, user, licenseInfoRequest.getLicenseCode());
-
-            licenseService.validateActivation(activeLicense,device,user.getLogin());
 
             Ticket ticket = licenseService.generateTicket(activeLicense, device);
 

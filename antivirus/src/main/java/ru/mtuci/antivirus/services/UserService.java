@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.mtuci.antivirus.entities.DTO.TokenResponse;
 import ru.mtuci.antivirus.entities.DTO.UserLoginDTO;
 import ru.mtuci.antivirus.entities.DTO.UserRegisterDTO;
 import ru.mtuci.antivirus.entities.ENUMS.ROLE;
@@ -109,5 +110,7 @@ public class UserService implements UserDetailsService {
             throw new RuntimeException("Logout error: " + e.getMessage());
         }
     }
+
+
 
 }

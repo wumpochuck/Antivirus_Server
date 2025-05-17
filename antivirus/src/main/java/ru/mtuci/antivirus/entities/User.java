@@ -62,7 +62,7 @@ public class User implements UserDetails {
     private List<LicenseHistory> licenseHistories;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties
+    @JsonIgnore
     private List<UserSession> sessions;
 
     @OneToMany(mappedBy = "changedBy", cascade = CascadeType.ALL)

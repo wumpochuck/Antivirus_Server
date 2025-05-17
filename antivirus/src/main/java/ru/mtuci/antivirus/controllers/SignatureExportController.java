@@ -1,36 +1,34 @@
 package ru.mtuci.antivirus.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.*;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.*;
 import ru.mtuci.antivirus.services.SignatureExportService;
 
+import java.util.List;
+import java.util.UUID;
+
 @RestController
-@RequestMapping("/api/signatures")
+@RequestMapping("/api/signatures/export")
 public class SignatureExportController {
-    private final SignatureExportService signatureExportService;
+
+    private final SignatureExportService exportService;
 
     @Autowired
-    public SignatureExportController(SignatureExportService signatureExportService) {
-        this.signatureExportService = signatureExportService;
+    public SignatureExportController(SignatureExportService exportService) {
+        this.exportService = exportService;
     }
 
-    @GetMapping(value = "/export", produces = "multipart/mixed")
-    public ResponseEntity<Resource> exportSignatures() throws Exception {
-        MultipartFile file = signatureExportService.exportSignatures();
+    @GetMapping(produces = MediaType.MULTIPART_MIXED_VALUE)
+    public ResponseEntity<MultiValueMap<String, Object>> exportAll() throws Exception {
+        return exportService.exportSignatures(null);
+    }
 
-        return ResponseEntity.status(200)
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"" + file.getOriginalFilename() + "\"")
-                .contentType(MediaType.parseMediaType(file.getContentType()))
-                .contentLength(file.getSize())
-                .body(new ByteArrayResource(file.getBytes()));
+    @PostMapping(produces = MediaType.MULTIPART_MIXED_VALUE)
+    public ResponseEntity<MultiValueMap<String, Object>> exportSelected(
+            @RequestBody List<UUID> signatureIds) throws Exception {
+        return exportService.exportSignatures(signatureIds);
     }
 }
+

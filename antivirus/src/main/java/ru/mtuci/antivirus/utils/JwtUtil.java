@@ -13,7 +13,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import ru.mtuci.antivirus.entities.User;
 
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.*;
 import java.util.function.Function;
@@ -32,7 +31,7 @@ public class JwtUtil {
     private long refreshTokenExpiration;
 
     private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+        return Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
     ///  Генерация access
@@ -49,7 +48,7 @@ public class JwtUtil {
     public String generateRefreshToken(User user){
         Map<String, Object> claims = new HashMap<>();
 
-        claims.put("role", user.getRole().name());
+        //claims.put("role", user.getRole().name());
         claims.put("token_type", "refresh");
 
         return createToken(claims, user.getUsername(), refreshTokenExpiration);
@@ -73,6 +72,7 @@ public class JwtUtil {
                     .setSigningKey(getSigningKey())
                     .build()
                     .parseClaimsJws(token);
+
             return true;
         } catch (ExpiredJwtException e){
             return false;

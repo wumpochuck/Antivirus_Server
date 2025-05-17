@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.mtuci.antivirus.entities.User;
 import ru.mtuci.antivirus.entities.requests.UserRequest;
 import ru.mtuci.antivirus.services.UserService;
+import ru.mtuci.antivirus.services.UserSessionService;
 
 import java.util.List;
 
@@ -19,6 +20,7 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+    private final UserSessionService userSessionService;
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/info/{id}")
@@ -38,7 +40,7 @@ public class UserController {
             String findUsername = userDetails.getUsername();
             User currentUser = userService.findUserByLogin(findUsername);
 
-            if (user.getLogin() != null && !user.getLogin().equals("null") && !user.getLogin().equals(currentUser.getLogin())) {
+            if (user.getLogin() != null && !user.getLogin().equals(currentUser.getLogin())) {
                 if (userService.existsByLogin(user.getLogin())) {
                     return ResponseEntity.status(400).body("Validation error: user already exists");
                 }
@@ -46,14 +48,14 @@ public class UserController {
                 currentUser.setLogin(user.getLogin());
             }
 
-            if (user.getEmail() != null && !user.getEmail().equals("null") && !user.getEmail().equals(currentUser.getEmail())) {
+            if (user.getEmail() != null && !user.getEmail().equals(currentUser.getEmail())) {
                 if (userService.existsByEmail(user.getEmail())) {
                     return ResponseEntity.status(400).body("Validation error: email already exists");
                 }
                 currentUser.setEmail(user.getEmail());
             }
 
-            if (user.getPassword() != null && !user.getPassword().equals("null")) {
+            if (user.getPassword() != null) {
                 currentUser.setPassword(passwordEncoder.encode(user.getPassword()));
             }
 
@@ -73,6 +75,16 @@ public class UserController {
             userService.deleteUser(id);
             return ResponseEntity.status(200).body("User with id: " + id + " deleted");
         } catch (Exception e){
+            return ResponseEntity.status(500).body("Internal Server Error: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/update-refresh")
+    public ResponseEntity<?> updateRefresh(@RequestParam String refresh){
+        try{
+            return ResponseEntity.status(200).body(userSessionService.updateRefreshToken(refresh));
+        } catch (Exception e){
+            // Заглушка
             return ResponseEntity.status(500).body("Internal Server Error: " + e.getMessage());
         }
     }

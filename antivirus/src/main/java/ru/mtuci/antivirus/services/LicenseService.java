@@ -178,7 +178,7 @@ public class LicenseService{
         return ticket;
     }
 
-    public void validateActivation(License license, Device device, String login) {
+    private void validateActivation(License license, Device device, String login) {
         User user = userService.findUserByLogin(login);
 
         if(license.getUser() != null){ // И теперь спереть лицуху не получится
@@ -206,17 +206,17 @@ public class LicenseService{
     }
 
     private void createDeviceLicense(License license, Device device) {
-        DeviceLicense deviceLicense = new DeviceLicense();
-        deviceLicense.setDevice(device);
-        deviceLicense.setLicense(license);
-        deviceLicense.setActivationDate(new Date());
+        try{
+            DeviceLicense deviceLicense = new DeviceLicense();
+            deviceLicense.setDevice(device);
+            deviceLicense.setLicense(license);
+            deviceLicense.setActivationDate(new Date());
 
-        try {
             deviceLicenseService.save(deviceLicense);
+        } catch (DataIntegrityViolationException e) {
+            System.out.println("Найден дубликат: устройство уже связано с лицензией");
         }
-        catch (DataIntegrityViolationException e) {
-            // throw new IllegalArgumentException("Это устройство уже связано с лицухой", e);
-        }
+
     }
 
     private void updateLicenseForActivation(License license, User user) {

@@ -54,7 +54,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
             // Если токен не истек и текущая сессия активна, то валидируем его и добавляем пользователя в КБ
             if(jwtUtil.validateToken(token) && userSessionService.isSessionActive(token)){
-
                 String username = jwtUtil.extractUsername(token);
                 String role = jwtUtil.extractRole(token);
 
@@ -81,4 +80,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
+
+//    /// Тест
+//    @Override
+//    protected boolean shouldNotFilter(HttpServletRequest request) {
+//        System.out.println("Скип эндпоинта");
+//        return request.getRequestURI().startsWith("/auth/");
+//    }
 }
